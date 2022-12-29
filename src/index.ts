@@ -17,14 +17,12 @@ function createWindow() {
     },
   });
 
-  isDevelopment()
-    ? window.loadURL("http://localhost:3000/")
-    : window.loadFile(
-        path.join(
-          getAppPath(),
-          app.isPackaged ? "./dist/render/index.html" : "./../render/index.html"
-        )
-      );
+  window.loadFile(
+    path.join(
+      getAppPath(),
+      app.isPackaged ? "./dist/render/index.html" : "./../render/index.html"
+    )
+  );
 }
 
 app.whenReady().then(() => {
