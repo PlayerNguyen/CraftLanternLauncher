@@ -25,8 +25,14 @@ let event: AsyncSubscription;
 (async () => {
   console.log(chalk.bgCyan(`:: Loading renderer server with ParcelJS`));
   event = await bundler.watch((err, build) => {
+    console.log(`...........`);
+
     if (err) {
       throw err;
+    }
+
+    if (build !== undefined && build.type === "buildFailure") {
+      console.log(build.diagnostics);
     }
 
     if (build !== undefined && build.type === "buildSuccess") {
