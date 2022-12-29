@@ -21,4 +21,8 @@ function getConfigPath() {
   return path.resolve(getApplicationDataPath(), "config.json");
 }
 
-export { getAppPath, getApplicationDataPath, setupDirectory, getConfigPath };
+function getVersionManifestPath() {
+  return path.resolve(getApplicationDataPath(), "manifest_v2.json");
+}
+
+export { getAppPath, getApplicationDataPath, setupDirectory, getConfigPath, getVersionManifestPath };
