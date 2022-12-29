@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import { MemoryRouter } from "react-router-dom";
+import "./index.css";
 
 export function App() {
   return (
     <>
       {/* Declare all nested pack here */}
       <MemoryRouter>
-        <div>Hello world</div>
+        <div className="bg-slate-900">Hello world</div>
       </MemoryRouter>
     </>
   );
