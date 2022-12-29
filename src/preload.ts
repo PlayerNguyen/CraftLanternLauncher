@@ -18,4 +18,6 @@ contextBridge.exposeInMainWorld("config", {
 
 contextBridge.exposeInMainWorld("profile", {
   getProfileList: () => ipcRenderer.invoke("profile:get"),
+  addProfile: (name: string, version: string) =>
+    ipcRenderer.invoke("profile:add", { name, version }),
 });

@@ -59,5 +59,11 @@ export class ProfileStorage {
     return this.profileList;
   }
 
-  public static createProfile() {}
+  public static createProfile(profile: Profile) {
+    console.log(
+      `Create new profile ${profile.profileName} with ${profile.versionId}`
+    );
+
+    this.profileList.push(profile);
+  }
 }

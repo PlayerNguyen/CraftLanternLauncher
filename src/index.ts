@@ -78,6 +78,13 @@ app.whenReady().then(async () => {
     return ProfileStorage.getProfileList();
   });
 
+  ipcMain.handle("profile:add", async (_event, ...args) => {
+    const { name, version } = args[0];
+    ProfileStorage.createProfile({ profileName: name, versionId: version });
+
+    return ProfileStorage.getProfileList();
+  });
+
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
