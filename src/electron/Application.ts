@@ -8,11 +8,11 @@ function isDevelopment() {
 }
 
 function getApplicationShortName() {
-  return "konvol";
+  return "lantern_launcher";
 }
 
 function getApplicationFullName() {
-  return "Konvol Launcher";
+  return "Lantern Launcher";
 }
 
 export { isDevelopment, getApplicationShortName, getApplicationFullName };

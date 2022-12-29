@@ -1,9 +1,15 @@
 import { app, BrowserWindow, dialog } from "electron";
-import { getAppPath } from "./electron/AssetResolver";
+import {
+  getApplicationDataPath,
+  getAppPath,
+  setupDirectory,
+} from "./electron/AssetResolver";
 import path from "path";
 import { isDevelopment } from "./electron/Application";
+import { ConfigurationStatic } from "./electron/configurations/Configuration";
 
 let window: BrowserWindow | null = null;
+ConfigurationStatic.getMemoryConfiguration();
 
 function createWindow() {
   window = new BrowserWindow({
@@ -26,6 +32,12 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  /**
+   * Before load, setup app data directory
+   */
+  console.log(`Using ${getApplicationDataPath()} as appData `);
+  setupDirectory();
+
   createWindow();
 
   app.on("activate", function () {

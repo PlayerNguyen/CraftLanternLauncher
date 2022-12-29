@@ -1,4 +1,5 @@
 import path from "path";
+import fs from "fs";
 import { app } from "electron";
 import { getApplicationShortName } from "./Application";
 
@@ -10,4 +11,14 @@ function getApplicationDataPath() {
   return path.resolve(app.getPath("appData"), getApplicationShortName());
 }
 
-export { getAppPath, getApplicationDataPath };
+function setupDirectory() {
+  if (!fs.existsSync(getApplicationDataPath())) {
+    fs.mkdirSync(getApplicationDataPath());
+  }
+}
+
+function getConfigPath() {
+  return path.resolve(getApplicationDataPath(), "config.json");
+}
+
+export { getAppPath, getApplicationDataPath, setupDirectory, getConfigPath };
