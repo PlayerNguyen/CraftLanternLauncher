@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog } from "electron";
+import { app, BrowserWindow, dialog, ipcMain } from "electron";
 import {
   getApplicationDataPath,
   getAppPath,
@@ -31,6 +31,26 @@ function createWindow() {
   );
 }
 
+function createDebugWindow() {
+  window = new BrowserWindow({
+    width: 400,
+    height: 600,
+    webPreferences: {
+      preload: path.join(
+        getAppPath(),
+        app.isPackaged ? "./dist/render/index.html" : "./preload.js"
+      ),
+    },
+  });
+
+  window.loadFile(
+    path.join(
+      getAppPath(),
+      app.isPackaged ? "./dist/render/index.html" : "./../render/index.html"
+    )
+  );
+}
+
 app.whenReady().then(() => {
   /**
    * Before load, setup app data directory
@@ -38,7 +58,18 @@ app.whenReady().then(() => {
   console.log(`Using ${getApplicationDataPath()} as appData `);
   setupDirectory();
 
+  // Inspect window
   createWindow();
+  // isDevelopment() && createDebugWindow();
+
+  // Load ipc
+  ipcMain.handle("config:get", async (event, ...args) => {
+    if (!ConfigurationStatic.getMemoryConfiguration().has(args[0])) {
+      throw new Error(`Config not found ${args}`);
+    }
+
+    return ConfigurationStatic.getMemoryConfiguration().get(args[0]);
+  });
 
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
