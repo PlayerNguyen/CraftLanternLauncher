@@ -1,8 +1,12 @@
-import React, { useEffect } from "react";
+import { MemoryRouter } from "react-router-dom";
 
 export function App() {
-  useEffect(() => {
-    console.log(versions.chrome());
-  }, []);
-  return <div>Hi</div>;
+  return (
+    <>
+      {/* Declare all nested pack here */}
+      <MemoryRouter>
+        <div>Hi Vietnam</div>
+      </MemoryRouter>
+    </>
+  );
 }

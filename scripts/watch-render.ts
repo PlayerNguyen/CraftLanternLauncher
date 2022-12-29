@@ -6,12 +6,12 @@ let bundler = new Parcel({
   entries: "./render/index.html",
   defaultConfig: "@parcel/config-default",
   mode: "production",
-  serveOptions: {
-    port: 3000,
-  },
-  hmrOptions: {
-    port: 3000,
-  },
+  // serveOptions: {
+  //   port: 3000,
+  // },
+  // hmrOptions: {
+  //   port: 3000,
+  // },
   targets: {
     reactRender: {
       distDir: "./dist/render",
