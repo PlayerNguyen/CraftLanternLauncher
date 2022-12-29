@@ -7,12 +7,24 @@ import {
 import path from "path";
 import { isDevelopment } from "./electron/Application";
 import { ConfigurationStatic } from "./electron/configurations/Configuration";
+import {
+  fetchMinecraftVersionManifest,
+  MinecraftManifestStorage,
+} from "./electron/mojang/MinecraftVersionManifest";
 
 let window: BrowserWindow | null = null;
 
 async function init() {
+  // Setup the launcher directory
+  setupDirectory();
+
+  // Setup the memory configuration
   ConfigurationStatic.getMemoryConfiguration();
+
+  // Load version manifest
+  await MinecraftManifestStorage.getManifest();
 }
+
 function createWindow() {
   window = new BrowserWindow({
     width: 800,
@@ -33,16 +45,16 @@ function createWindow() {
   );
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   /**
    * Before load, setup app data directory
    */
   console.log(`Using ${getApplicationDataPath()} as appData `);
-  setupDirectory();
-  ConfigurationStatic.getMemoryConfiguration();
+
+  await init();
+
   // Inspect window
   createWindow();
-  // isDevelopment() && createDebugWindow();
 
   // Load ipc
   ipcMain.handle("config:get", async (event, ...args) => {

@@ -14,10 +14,13 @@
     "package": "ts-node ./scripts/pack-application.ts",
     "clean": "ts-node ./scripts/clean-application.ts"
   },
-  "dependencies": {},
+  "dependencies": {
+    "needle": "^3.2.0"
+  },
   "devDependencies": {
     "@parcel/config-default": "^2.8.2",
     "@parcel/core": "^2.8.2",
+    "@types/needle": "^3.2.0",
     "@types/react": "^18.0.26",
     "chalk": "4.1.2",
     "concurrently": "^7.6.0",
