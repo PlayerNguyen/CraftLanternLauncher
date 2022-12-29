@@ -9,31 +9,13 @@ import { isDevelopment } from "./electron/Application";
 import { ConfigurationStatic } from "./electron/configurations/Configuration";
 
 let window: BrowserWindow | null = null;
-ConfigurationStatic.getMemoryConfiguration();
 
+async function init() {
+  ConfigurationStatic.getMemoryConfiguration();
+}
 function createWindow() {
   window = new BrowserWindow({
     width: 800,
-    height: 600,
-    webPreferences: {
-      preload: path.join(
-        getAppPath(),
-        app.isPackaged ? "./dist/render/index.html" : "./preload.js"
-      ),
-    },
-  });
-
-  window.loadFile(
-    path.join(
-      getAppPath(),
-      app.isPackaged ? "./dist/render/index.html" : "./../render/index.html"
-    )
-  );
-}
-
-function createDebugWindow() {
-  window = new BrowserWindow({
-    width: 400,
     height: 600,
     webPreferences: {
       preload: path.join(
@@ -57,7 +39,7 @@ app.whenReady().then(() => {
    */
   console.log(`Using ${getApplicationDataPath()} as appData `);
   setupDirectory();
-
+  ConfigurationStatic.getMemoryConfiguration();
   // Inspect window
   createWindow();
   // isDevelopment() && createDebugWindow();
