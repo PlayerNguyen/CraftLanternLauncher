@@ -1,0 +1,33 @@
+{
+  "name": "crafting-table-launcher",
+  "description": "description",
+  "authors": "PlayerNguyen",
+  "version": "1.0.0-alpha",
+  "license": "MIT",
+  "main": "./dist/src/index.js",
+  "scripts": {
+    "start": "ts-node ./scripts/check-build.ts && electron ./dist/src/index.js",
+    "dev": "npm run clean && cross-env NODE_ENV=development concurrently \"npm:watch-*\" --exit",
+    "watch-render": "ts-node ./scripts/watch-render",
+    "watch-electron": "wait-on tcp:3000 && electronmon -r ts-node/register ./src/index.ts",
+    "build": "ts-node ./scripts/build-application.ts && tsc",
+    "package": "ts-node ./scripts/pack-application.ts",
+    "clean": "ts-node ./scripts/clean-application.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@parcel/config-default": "^2.8.2",
+    "@parcel/core": "^2.8.2",
+    "chalk": "4.1.2",
+    "concurrently": "^7.6.0",
+    "cross-env": "^7.0.3",
+    "electron": "^22.0.0",
+    "electron-packager": "^17.1.1",
+    "electronmon": "^2.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.4",
+    "wait-on": "^7.0.1"
+  }
+}
