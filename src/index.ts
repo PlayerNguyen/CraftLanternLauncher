@@ -1,3 +1,4 @@
+import { ProfileStorage } from "./electron/profile/Profile";
 import { app, BrowserWindow, dialog, ipcMain } from "electron";
 import {
   getApplicationDataPath,
@@ -14,7 +15,7 @@ import {
 
 let window: BrowserWindow | null = null;
 
-async function init() {
+async function loadApplication() {
   // Setup the launcher directory
   setupDirectory();
 
@@ -23,6 +24,14 @@ async function init() {
 
   // Load version manifest
   await MinecraftManifestStorage.getManifest();
+
+  // Load the profile
+  await ProfileStorage.load();
+}
+
+async function unloadApplication() {
+  // Unload profile
+  await ProfileStorage.unload();
 }
 
 function createWindow() {
@@ -51,7 +60,7 @@ app.whenReady().then(async () => {
    */
   console.log(`Using ${getApplicationDataPath()} as appData `);
 
-  await init();
+  await loadApplication();
 
   // Inspect window
   createWindow();
@@ -65,11 +74,20 @@ app.whenReady().then(async () => {
     return ConfigurationStatic.getMemoryConfiguration().get(args[0]);
   });
 
+  ipcMain.handle("profile:get", async (_event, ..._args) => {
+    return ProfileStorage.getProfileList();
+  });
+
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+});
+
+app.on("will-quit", async () => {
+  console.log(`Unload everything...`);
+  await unloadApplication();
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
