@@ -7,4 +7,12 @@ function isDevelopment() {
   return process.env.NODE_ENV === "development";
 }
 
-export { isDevelopment };
+function getApplicationShortName() {
+  return "konvol";
+}
+
+function getApplicationFullName() {
+  return "Konvol Launcher";
+}
+
+export { isDevelopment, getApplicationShortName, getApplicationFullName };
