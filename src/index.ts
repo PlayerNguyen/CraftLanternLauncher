@@ -1,5 +1,5 @@
 import { ProfileStorage } from "./electron/profile/Profile";
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow } from "electron";
 import {
   getApplicationDataPath,
   getAppPath,
