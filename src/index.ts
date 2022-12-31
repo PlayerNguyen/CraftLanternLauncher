@@ -12,6 +12,9 @@ import {
   fetchMinecraftVersionManifest,
   MinecraftManifestStorage,
 } from "./electron/mojang/MinecraftVersionManifest";
+import { IpcMainListenerRegistry } from "./electron/ipc/IpcMainListenerRegistry";
+import { InvokeGetProfileListener } from "./electron/ipc/IpcProfileListener";
+import { IpcMainListener } from "./electron/ipc/IpcMainListener";
 
 let window: BrowserWindow | null = null;
 
@@ -54,6 +57,10 @@ function createWindow() {
   );
 }
 
+function getStandardListener(): IpcMainListener[] {
+  return [new InvokeGetProfileListener()];
+}
+
 app.whenReady().then(async () => {
   /**
    * Before load, setup app data directory
@@ -65,6 +72,12 @@ app.whenReady().then(async () => {
   // Inspect window
   createWindow();
 
+  let registry = new IpcMainListenerRegistry();
+  for (let listener of getStandardListener()) {
+    registry.register(listener);
+  }
+  registry.subscribe();
+
   // Load ipc
   ipcMain.handle("config:get", async (event, ...args) => {
     if (!ConfigurationStatic.getMemoryConfiguration().has(args[0])) {
@@ -74,16 +87,6 @@ app.whenReady().then(async () => {
     return ConfigurationStatic.getMemoryConfiguration().get(args[0]);
   });
 
-  ipcMain.handle("profile:get", async (_event, ..._args) => {
-    return ProfileStorage.getProfileList();
-  });
-
-  ipcMain.handle("profile:add", async (_event, ...args) => {
-    const { name, version } = args[0];
-    ProfileStorage.createProfile({ profileName: name, versionId: version });
-
-    return ProfileStorage.getProfileList();
-  });
 
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
