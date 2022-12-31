@@ -25,4 +25,15 @@ function getVersionManifestPath() {
   return path.resolve(getApplicationDataPath(), "manifest_v2.json");
 }
 
-export { getAppPath, getApplicationDataPath, setupDirectory, getConfigPath, getVersionManifestPath };
+function getProfilePath() {
+  return path.resolve(getApplicationDataPath(), "profiles.json");
+}
+
+export {
+  getAppPath,
+  getApplicationDataPath,
+  setupDirectory,
+  getConfigPath,
+  getVersionManifestPath,
+  getProfilePath,
+};

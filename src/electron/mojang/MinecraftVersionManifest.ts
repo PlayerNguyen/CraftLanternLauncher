@@ -57,6 +57,10 @@ export class MinecraftManifestStorage {
         getVersionManifestPath(),
         JSON.stringify(updatedManifest)
       );
+      console.log(
+        `Successfully with latest Minecraft release version ${updatedManifest.latest.release}`
+      );
+
       // Update it into manifest
       return updatedManifest;
     } catch (err) {
