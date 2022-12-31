@@ -1,34 +1,38 @@
 import { ProfileStorage } from "./electron/profile/Profile";
-import { app, BrowserWindow, dialog, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import {
   getApplicationDataPath,
   getAppPath,
+  getConfigPath,
   setupDirectory,
 } from "./electron/AssetResolver";
 import path from "path";
-import { isDevelopment } from "./electron/Application";
 import { ConfigurationStatic } from "./electron/configurations/Configuration";
-import {
-  fetchMinecraftVersionManifest,
-  MinecraftManifestStorage,
-} from "./electron/mojang/MinecraftVersionManifest";
+import { MinecraftManifestStorage } from "./electron/mojang/MinecraftVersionManifest";
 import { IpcMainListenerRegistry } from "./electron/ipc/IpcMainListenerRegistry";
-import { InvokeGetProfileListener } from "./electron/ipc/IpcProfileListener";
-import { IpcMainListener } from "./electron/ipc/IpcMainListener";
 
 let window: BrowserWindow | null = null;
 
+/**
+ * Load the application before render the renderer
+ * Note: the browser window (renderer) are not loaded.
+ */
 async function loadApplication() {
   // Setup the launcher directory
+  console.log(`Using ${getApplicationDataPath()} as appData `);
   setupDirectory();
 
   // Setup the memory configuration
+  console.log(`Loading configuration from ${getConfigPath()} if existed`);
   ConfigurationStatic.getMemoryConfiguration();
 
   // Load version manifest
+  console.log(`Updating version manifest if possible`);
   await MinecraftManifestStorage.getManifest();
 
   // Load the profile
+  console.log(`Loading list of profiles`);
+
   await ProfileStorage.load();
 }
 
@@ -57,36 +61,19 @@ function createWindow() {
   );
 }
 
-function getStandardListener(): IpcMainListener[] {
-  return [new InvokeGetProfileListener()];
-}
-
 app.whenReady().then(async () => {
   /**
    * Before load, setup app data directory
    */
-  console.log(`Using ${getApplicationDataPath()} as appData `);
-
   await loadApplication();
 
   // Inspect window
   createWindow();
 
+  // Load IPC
   let registry = new IpcMainListenerRegistry();
-  for (let listener of getStandardListener()) {
-    registry.register(listener);
-  }
+  // TODO: Register the listener for api
   registry.subscribe();
-
-  // Load ipc
-  ipcMain.handle("config:get", async (event, ...args) => {
-    if (!ConfigurationStatic.getMemoryConfiguration().has(args[0])) {
-      throw new Error(`Config not found ${args}`);
-    }
-
-    return ConfigurationStatic.getMemoryConfiguration().get(args[0]);
-  });
-
 
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the

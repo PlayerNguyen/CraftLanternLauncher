@@ -1,15 +1,25 @@
 import { ipcMain } from "electron";
+import { InvokeGetConfigListener } from "./IpcConfigListener";
 import {
   IpcMainListener,
   IpcMainInvokeListener,
   IpcMainSendListener,
 } from "./IpcMainListener";
+import {
+  InvokeAddProfileListener,
+  InvokeGetProfileListener,
+} from "./IpcProfileListener";
 
 export class IpcMainListenerRegistry {
   listeners: IpcMainListener[] = [];
 
   public register(listener: IpcMainListener) {
     this.listeners.push(listener);
+    /**
+     * Default registry
+     *
+     */
+    this.listeners.push(...getStdListeners());
   }
 
   public subscribe() {
@@ -23,4 +33,12 @@ export class IpcMainListenerRegistry {
       }
     }
   }
+}
+
+export function getStdListeners(): IpcMainListener[] {
+  return [
+    new InvokeGetProfileListener(),
+    new InvokeAddProfileListener(),
+    new InvokeGetConfigListener(),
+  ];
 }
