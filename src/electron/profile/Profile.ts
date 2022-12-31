@@ -1,8 +1,10 @@
 import { MinecraftManifestStorage } from "./../mojang/MinecraftVersionManifest";
 import { getProfilePath } from "../AssetResolver";
 import fs from "fs";
+import * as uuid from "uuid";
 
 interface Profile {
+  id: string;
   profileName: string;
   versionId: string;
 }
@@ -27,6 +29,7 @@ export class ProfileStorage {
       // Default profile
       this.profileList = [
         {
+          id: uuid.v4(),
           profileName: "Latest",
           versionId: latestMinecraftVersion.id,
         },
@@ -65,5 +68,11 @@ export class ProfileStorage {
     );
 
     this.profileList.push(profile);
+  }
+
+  public static removeProfile(id: string) {
+    console.log(`Remove a profile with id ${id}`);
+
+    this.profileList = this.profileList.filter((profile) => profile.id !== id);
   }
 }
