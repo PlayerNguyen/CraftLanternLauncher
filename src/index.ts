@@ -3,6 +3,7 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import {
   getApplicationDataPath,
   getAppPath,
+  getAssetsDirPath,
   getConfigPath,
   setupDirectory,
 } from "./electron/AssetResolver";
@@ -10,6 +11,7 @@ import path from "path";
 import { ConfigurationStatic } from "./electron/configurations/Configuration";
 import { MinecraftManifestStorage } from "./electron/mojang/MinecraftVersionManifest";
 import { IpcMainListenerRegistry } from "./electron/ipc/IpcMainListenerRegistry";
+import { DownloaderService } from "./electron/download/DownloaderService";
 
 let window: BrowserWindow | null = null;
 
@@ -74,6 +76,44 @@ app.whenReady().then(async () => {
   let registry = new IpcMainListenerRegistry();
   // TODO: Register the listener for api
   registry.subscribe();
+
+  // Downloader
+  // let gameAssetDownloader = new DownloaderService(window);
+  // for (let i = 0; i < 10; i++) {
+  //   gameAssetDownloader.addItem({
+  //     path: path.join(getAssetsDirPath(), `ico_${i}.png`),
+  //     url: "https://avatars.githubusercontent.com/u/10703461?s=40&v=4",
+  //     size: 1291,
+  //   });
+  // }
+
+  // gameAssetDownloader.on("finish-once", (item) => {
+  //   console.log(item);
+  // });
+
+  //  let gameAssetDownloader = new GameAssetDownloader(window);
+  //   gameAssetDownloader.addItem(
+  //     {
+  //       path: "./test/adoptiumjdk1.tar.gz",
+  //       url: "https://objects.githubusercontent.com/github-production-release-asset-2e65be/372924883/79931b4b-4af9-48a9-b595-0e5988b8ca98?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20221231%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20221231T051807Z&X-Amz-Expires=300&X-Amz-Signature=28e3005cb46aef02de70a4150d92af173827683e306a5aedb8359f828ffc8be8&X-Amz-SignedHeaders=host&actor_id=10703461&key_id=0&repo_id=372924883&response-content-disposition=attachment%3B%20filename%3DOpenJDK11U-jdk_x64_linux_hotspot_11.0.17_8.tar.gz&response-content-type=application%2Foctet-stream",
+  //     },
+  //     {
+  //       path: "./test/adoptiumjdk2.tar.gz",
+  //       url: "https://objects.githubusercontent.com/github-production-release-asset-2e65be/372924883/79931b4b-4af9-48a9-b595-0e5988b8ca98?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20221231%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20221231T051807Z&X-Amz-Expires=300&X-Amz-Signature=28e3005cb46aef02de70a4150d92af173827683e306a5aedb8359f828ffc8be8&X-Amz-SignedHeaders=host&actor_id=10703461&key_id=0&repo_id=372924883&response-content-disposition=attachment%3B%20filename%3DOpenJDK11U-jdk_x64_linux_hotspot_11.0.17_8.tar.gz&response-content-type=application%2Foctet-stream",
+  //     },
+  //     {
+  //       path: "./test/adoptiumjdk3.tar.gz",
+  //       url: "https://objects.githubusercontent.com/github-production-release-asset-2e65be/372924883/79931b4b-4af9-48a9-b595-0e5988b8ca98?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20221231%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20221231T051807Z&X-Amz-Expires=300&X-Amz-Signature=28e3005cb46aef02de70a4150d92af173827683e306a5aedb8359f828ffc8be8&X-Amz-SignedHeaders=host&actor_id=10703461&key_id=0&repo_id=372924883&response-content-disposition=attachment%3B%20filename%3DOpenJDK11U-jdk_x64_linux_hotspot_11.0.17_8.tar.gz&response-content-type=application%2Foctet-stream",
+  //     }
+  //   );
+
+  // gameAssetDownloader.downloadItems();
+  
+
+  // gameAssetDownloader.on("completed", (_i) => {
+  //   console.log(_i.length);
+  //   console.log(_i);
+  // });
 
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the

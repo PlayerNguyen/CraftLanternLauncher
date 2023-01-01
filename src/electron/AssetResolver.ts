@@ -12,8 +12,11 @@ function getApplicationDataPath() {
 }
 
 function setupDirectory() {
-  if (!fs.existsSync(getApplicationDataPath())) {
-    fs.mkdirSync(getApplicationDataPath());
+  const mustMakeDirectory = [getApplicationDataPath(), getAssetsDirPath()];
+  for (let directory of mustMakeDirectory) {
+    if (!fs.existsSync(directory)) {
+      fs.mkdirSync(directory);
+    }
   }
 }
 
@@ -29,6 +32,10 @@ function getProfilePath() {
   return path.resolve(getApplicationDataPath(), "profiles.json");
 }
 
+function getAssetsDirPath() {
+  return path.resolve(getApplicationDataPath(), "assets");
+}
+
 export {
   getAppPath,
   getApplicationDataPath,
@@ -36,4 +43,5 @@ export {
   getConfigPath,
   getVersionManifestPath,
   getProfilePath,
+  getAssetsDirPath,
 };
