@@ -55,4 +55,17 @@ export class Queue<T> {
 
     return arr;
   }
+  public pushTop(element: T) {
+    const queueElement: QueueNode<T> = {
+      value: element,
+      next: undefined,
+    };
+    if (!this.head) {
+      this.tail = queueElement;
+    } else {
+      let firstHead = this.head;
+      queueElement.next = firstHead;
+    }
+    this.head = queueElement;
+  }
 }

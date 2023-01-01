@@ -24,12 +24,20 @@ export class DownloadProgress {
 }
 
 export declare interface DownloadEvent {
-  on(event: "error", listener: (item: DownloadItem) => void): this;
+  on(
+    event: "error",
+    listener: (error: Error, item: DownloadItem) => void
+  ): this;
   on(event: "finish", listener: (item: DownloadItem) => void): this;
   on(
     event: "data",
-    listener: (item: DownloadItem, chunk: Buffer) => void
+    listener: (
+      item: DownloadItem,
+      chunk: Buffer,
+      progress: DownloadProgress
+    ) => void
   ): this;
+  on(event: "corrupted", listener: () => void): this;
 }
 export class DownloadEvent extends EventEmitter {
   progress: DownloadProgress = new DownloadProgress(-1);
@@ -38,12 +46,4 @@ export class DownloadEvent extends EventEmitter {
       downloadItem.size ? downloadItem.size : -1
     );
   }
-}
-
-export interface Downloader extends EventEmitter {
-  download(item: DownloadItem | HashableDownloadItem): DownloadEvent;
-}
-
-export interface HashableDownloader extends Downloader {
-  verifyFile(): void;
 }

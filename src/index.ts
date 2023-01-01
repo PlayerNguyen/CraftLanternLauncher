@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import { ProfileStorage } from "./electron/profile/Profile";
 import { app, BrowserWindow, ipcMain } from "electron";
 import {
@@ -78,7 +79,6 @@ app.whenReady().then(async () => {
   registry.subscribe();
 
   // Downloader
-  // let gameAssetDownloader = new DownloaderService(window);
   // for (let i = 0; i < 10; i++) {
   //   gameAssetDownloader.addItem({
   //     path: path.join(getAssetsDirPath(), `ico_${i}.png`),
@@ -108,7 +108,6 @@ app.whenReady().then(async () => {
   //   );
 
   // gameAssetDownloader.downloadItems();
-  
 
   // gameAssetDownloader.on("completed", (_i) => {
   //   console.log(_i.length);
