@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    font-family: Pixeloid Sans, system-ui, sans-serif;
+  }
+}
+
+@font-face {
+  font-family: "Pixeloid Mono";
+  src: url(/render/assets/fonts/PixeloidMono.ttf);
+}
+
+@font-face {
+  font-family: "Pixeloid Sans";
+  src: url(/render/assets/fonts/PixeloidSans.ttf);
+}
+
+@font-face {
+  font-family: "Pixeloid Sans Bold";
+  src: url(/render/assets/fonts/PixeloidSans-Bold.ttf);
+}
