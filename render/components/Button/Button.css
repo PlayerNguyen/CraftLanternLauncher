@@ -1,0 +1,32 @@
+@tailwind components;
+
+@layer components {
+  .btn {
+    @apply border-2 border-neutral focus:border-neutral-focus active:border-neutral-focus;
+  }
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-focus text-primary-content;
+  }
+  .btn-borderless {
+    @apply border-0;
+  }
+  .btn-square {
+    @apply border-r-0;
+  }
+
+  .btn-xs {
+    @apply px-0 py-0;
+  }
+
+  .btn-sm {
+    @apply px-2 py-1;
+  }
+
+  .btn-md {
+    @apply px-3 py-2;
+  }
+
+  .btn-lg {
+    @apply px-4 py-3;
+  }
+}

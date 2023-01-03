@@ -5,6 +5,7 @@
 @layer base {
   html {
     font-family: Pixeloid Sans, system-ui, sans-serif;
+    @apply text-base-content;
   }
 }
 

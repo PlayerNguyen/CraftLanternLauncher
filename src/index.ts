@@ -14,27 +14,45 @@ import { IpcMainListenerRegistry } from "./electron/ipc/IpcMainListenerRegistry"
 
 let window: BrowserWindow | null = null;
 
-/**
- * Load the application before render the renderer
- * Note: the browser window (renderer) are not loaded.
- */
-async function loadApplication() {
+async function beforeLoadWindow() {
   // Setup the launcher directory
   console.log(`Using ${getApplicationDataPath()} as appData `);
   setupDirectory();
+}
+function loadWindow() {
+  // Inspect window
+  let _window = createWindow();
+  // Init the launcher (loading state)
+  _window.on("ready-to-show", async () => {
+    await afterLoadWindow(_window);
+  });
+  // Set traffic light
+  _window.setWindowButtonVisibility(false);
+  return _window;
+}
+async function afterLoadWindow(window: BrowserWindow) {
+  try {
+    // Setup the memory configuration
+    console.log(`Loading configuration from ${getConfigPath()} if existed`);
+    window.webContents.send("launcher:boot", "config");
+    ConfigurationStatic.getMemoryConfiguration();
 
-  // Setup the memory configuration
-  console.log(`Loading configuration from ${getConfigPath()} if existed`);
-  ConfigurationStatic.getMemoryConfiguration();
+    // Load version manifest
+    console.log(`Updating version manifest if possible`);
+    window.webContents.send("launcher:boot", "version_manifest");
+    await MinecraftManifestStorage.getManifest();
 
-  // Load version manifest
-  console.log(`Updating version manifest if possible`);
-  await MinecraftManifestStorage.getManifest();
+    // Load the profile
+    console.log(`Loading list of profiles`);
+    window.webContents.send("launcher:boot", "profile");
+    await ProfileStorage.load();
 
-  // Load the profile
-  console.log(`Loading list of profiles`);
-
-  await ProfileStorage.load();
+    // window.webContents.send("launcher:init");
+    // window.setWindowButtonVisibility(true)
+  } catch (err) {
+    window.webContents.send("launcher:error", err)
+    throw err;
+  }
 }
 
 async function unloadApplication() {
@@ -52,6 +70,7 @@ function createWindow() {
         app.isPackaged ? "./dist/render/index.html" : "./preload.js"
       ),
     },
+    titleBarStyle: "hiddenInset",
   });
 
   window.loadFile(
@@ -60,16 +79,17 @@ function createWindow() {
       app.isPackaged ? "./dist/render/index.html" : "./../render/index.html"
     )
   );
+
+  return window;
 }
 
 app.whenReady().then(async () => {
   /**
    * Before load, setup app data directory
    */
-  await loadApplication();
-
-  // Inspect window
-  createWindow();
+  await beforeLoadWindow();
+  window = loadWindow();
+  // await afterLoadWindow(window);
 
   // Load IPC
   let registry = new IpcMainListenerRegistry();

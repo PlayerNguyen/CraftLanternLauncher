@@ -21,3 +21,11 @@ contextBridge.exposeInMainWorld("profile", {
   addProfile: (name: string, version: string) =>
     ipcRenderer.invoke("profile:add", { name, version }),
 });
+
+contextBridge.exposeInMainWorld("launcher", {
+  handleInit: (callback: any) => ipcRenderer.on("launcher:init", callback),
+  handleBoot: (callback: any) => ipcRenderer.on("launcher:boot", callback),
+  handleError: (callback: any) => ipcRenderer.on("launcher:error", callback),
+  clearErrorChannels: () => ipcRenderer.removeAllListeners("launcher:error"),
+  clearBootChannel: () => ipcRenderer.removeAllListeners("launcher:boot"),
+});

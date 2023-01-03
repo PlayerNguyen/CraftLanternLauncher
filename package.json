@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "needle": "^3.2.0",
+    "react-icons": "^4.7.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
