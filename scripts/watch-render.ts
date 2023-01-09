@@ -5,7 +5,7 @@ import chalk from "chalk";
 let bundler = new Parcel({
   entries: "./render/index.html",
   defaultConfig: "@parcel/config-default",
-  mode: "production",
+  mode: "development",
   // serveOptions: {
   //   port: 3000,
   // },
