@@ -12,7 +12,8 @@
     "watch-electron": "wait-on file:./dist/render && concurrently \"tsc -w\" \"wait-on file:./dist/src && electronmon ./dist/src/index.js\" ",
     "build": "ts-node ./scripts/build-application.ts && tsc",
     "package": "ts-node ./scripts/pack-application.ts",
-    "clean": "ts-node ./scripts/clean-application.ts"
+    "clean": "ts-node ./scripts/clean-application.ts",
+    "test": "nyc mocha -r ts-node/register ./test/**/*.spec.ts"
   },
   "dependencies": {
     "needle": "^3.2.0",
@@ -22,15 +23,20 @@
   "devDependencies": {
     "@parcel/config-default": "^2.8.2",
     "@parcel/core": "^2.8.2",
+    "@types/chai": "^4.3.4",
+    "@types/mocha": "^10.0.1",
     "@types/needle": "^3.2.0",
     "@types/react": "^18.0.26",
     "@types/uuid": "^9.0.0",
+    "chai": "^4.3.7",
     "chalk": "4.1.2",
     "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
     "electron": "^22.0.0",
     "electron-packager": "^17.1.1",
     "electronmon": "^2.0.2",
+    "mocha": "^10.2.0",
+    "nyc": "^15.1.0",
     "parcel-transformer-fonts": "^1.1.3",
     "postcss": "^8.4.20",
     "react": "^18.2.0",
