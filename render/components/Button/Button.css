@@ -2,7 +2,10 @@
 
 @layer components {
   .btn {
-    @apply border-2 border-neutral focus:border-neutral-focus active:border-neutral-focus;
+    @apply border-2 border-neutral focus:border-neutral-focus active:border-neutral-focus cursor-pointer;
+  }
+  .btn:disabled {
+    @apply bg-neutral hover:bg-neutral;
   }
   .btn-primary {
     @apply bg-primary hover:bg-primary-focus text-primary-content;

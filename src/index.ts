@@ -47,10 +47,12 @@ async function afterLoadWindow(window: BrowserWindow) {
     window.webContents.send("launcher:boot", "profile");
     await ProfileStorage.load();
 
-    // window.webContents.send("launcher:init");
-    // window.setWindowButtonVisibility(true)
+    setTimeout(() => {
+      window.webContents.send("launcher:init");
+      window.setWindowButtonVisibility(true);
+    }, 200);
   } catch (err) {
-    window.webContents.send("launcher:error", err)
+    window.webContents.send("launcher:error", err);
     throw err;
   }
 }

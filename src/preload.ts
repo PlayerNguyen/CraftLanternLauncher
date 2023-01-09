@@ -24,8 +24,9 @@ contextBridge.exposeInMainWorld("profile", {
 
 contextBridge.exposeInMainWorld("launcher", {
   handleInit: (callback: any) => ipcRenderer.on("launcher:init", callback),
+  clearInitChannels: () => ipcRenderer.removeAllListeners("launcher:init"),
   handleBoot: (callback: any) => ipcRenderer.on("launcher:boot", callback),
+  clearBootChannel: () => ipcRenderer.removeAllListeners("launcher:boot"),
   handleError: (callback: any) => ipcRenderer.on("launcher:error", callback),
   clearErrorChannels: () => ipcRenderer.removeAllListeners("launcher:error"),
-  clearBootChannel: () => ipcRenderer.removeAllListeners("launcher:boot"),
 });
