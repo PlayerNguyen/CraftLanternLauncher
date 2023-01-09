@@ -13,7 +13,8 @@
     "build": "ts-node ./scripts/build-application.ts && tsc",
     "package": "ts-node ./scripts/pack-application.ts",
     "clean": "ts-node ./scripts/clean-application.ts",
-    "test": "nyc mocha -r ts-node/register ./test/**/*.spec.ts"
+    "test": "electron-mocha -r ts-node/register ./test/**/*.spec.ts",
+    "coverage": "nyc npm run test"
   },
   "dependencies": {
     "needle": "^3.2.0",
@@ -33,6 +34,7 @@
     "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
     "electron": "^22.0.0",
+    "electron-mocha": "^11.0.2",
     "electron-packager": "^17.1.1",
     "electronmon": "^2.0.2",
     "mocha": "^10.2.0",
