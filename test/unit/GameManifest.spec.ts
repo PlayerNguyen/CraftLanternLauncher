@@ -9,7 +9,8 @@ describe("MinecraftManifestStorage", () => {
   /**
    * Load the storage
    */
-  beforeEach((done) => {
+  beforeEach(function (done) {
+    this.slow();
     MinecraftManifestStorage.getManifest().then(
       (versionManifest: VersionManifestResponse) => {
         expect(versionManifest).not.to.be.empty;
