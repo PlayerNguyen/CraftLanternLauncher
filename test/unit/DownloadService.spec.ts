@@ -1,3 +1,6 @@
+/**
+ *  The test will fail if (rarely) Minecraft server is down
+ */
 import { expect } from "chai";
 import path from "path";
 import { DownloaderService } from "./../../src/electron/download/DownloaderService";
@@ -6,7 +9,6 @@ import {
   DownloadProgress,
   HashableDownloadItem,
 } from "../../src/electron/download/Downloader";
-import needle from "needle";
 
 let TEST_OUTPUT_DIRECTORY = process.env.TEST_OUTPUT_DIRECTORY || ".test_output";
 
