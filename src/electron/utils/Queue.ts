@@ -13,6 +13,7 @@ export class Queue<T> {
     if (!this.head || !this.tail) {
       this.head = qNode;
       this.tail = qNode;
+      this.size++;
       return;
     }
 
