@@ -46,7 +46,9 @@ export declare interface DownloaderService {
 
   getCompletedItems(): DownloadItem[];
 
-  addItem(...downloadItem: DownloadItem[]): void;
+  addItem(...downloadItem: HashableDownloadItem[] | DownloadItem[]): void;
+
+  clearItems(): void;
 }
 
 export class DownloaderService extends EventEmitter {
@@ -109,7 +111,7 @@ export class DownloaderService extends EventEmitter {
     return downloadEvent;
   }
 
-  public downloadItems(options: DownloadItemOptions) {
+  public downloadItems(options?: DownloadItemOptions) {
     // Check whether the queue is empty or not
     if (!this.hasNext()) {
       throw new Error("The download queue is empty. Must add the item first");
@@ -119,7 +121,7 @@ export class DownloaderService extends EventEmitter {
 
     // Path checker
     let dirNameItem = path.dirname(this.currentDownloadItem.path);
-    if (options.createDirIfEmpty) {
+    if (options?.createDirIfEmpty) {
       fs.mkdirSync(dirNameItem, { recursive: true });
     } else {
       throw new Error(
@@ -172,7 +174,7 @@ export class DownloaderService extends EventEmitter {
         // Remove the file
         fs.rmSync(currentDownloadItem.path);
 
-        this.emit("corrupted");
+        this.emit("corrupted", currentDownloadItem);
 
         // Download next file if possible
         if (this.hasNext()) {
@@ -187,11 +189,24 @@ export class DownloaderService extends EventEmitter {
   }
 
   private verifyFile(hexValue: string): boolean {
+    console.log(`    [item_hash]: ${this.currentDownloadItem?.hash}`);
+    console.log(`    [hexValue]:  ${hexValue}`);
+
     return this.currentDownloadItem?.hash === hexValue;
+  }
+
+  public clearItems(): void {
+    // Clear all items out of queue
+    while (this.downloadQueue.hasNext()) {
+      this.downloadQueue.pop();
+    }
+
+    // Set the current item to undefined
+    this.currentDownloadItem = undefined;
   }
 }
 
 export declare interface DownloadItemOptions {
-  overwrite: boolean;
-  createDirIfEmpty: boolean;
+  overwrite?: boolean;
+  createDirIfEmpty?: boolean;
 }
