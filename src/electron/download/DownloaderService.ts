@@ -1,5 +1,4 @@
 import path from "path";
-import { BrowserWindow } from "electron";
 import needle from "needle";
 import { EventEmitter } from "events";
 import {
@@ -72,10 +71,23 @@ export class DownloaderService extends EventEmitter {
     return this;
   }
 
-  public download(downloadItem: HashableDownloadItem): DownloadEvent {
+  public download(
+    downloadItem: HashableDownloadItem,
+    downloadOptions: DownloadItemOptions
+  ): DownloadEvent {
     const downloadEvent = new DownloadEvent();
     if (downloadItem.size) {
       downloadEvent.progress.actualSize = downloadItem.size;
+    } else {
+      console.log(
+        `The object has no file size, trying to get file size from url...`
+      );
+      let headStream = needle.head(downloadItem.url);
+      headStream.on("header", (_code, headers) => {
+        let length = headers["content-length"];
+        console.log(`Content size length from url: ${length}`);
+        downloadItem.size = length;
+      });
     }
     try {
       const { url, path, size } = downloadItem;
@@ -99,7 +111,11 @@ export class DownloaderService extends EventEmitter {
       });
 
       downloadStream.on("finish", () => {
-        if (this.verifyFile(hash.digest("hex"))) {
+        // If the checksum is valid or use want to ignore check sum.
+        if (
+          this.verifyFile(hash.digest("hex")) ||
+          downloadOptions.ignoreChecksum
+        ) {
           downloadEvent.emit("finish", downloadItem);
         } else {
           downloadEvent.emit("corrupted", downloadItem);
@@ -129,7 +145,7 @@ export class DownloaderService extends EventEmitter {
       );
     }
 
-    let downloadEvent = this.download(this.currentDownloadItem);
+    let downloadEvent = this.download(this.currentDownloadItem, options);
 
     downloadEvent.on("data", (buffer, item, progress) => {
       this.emit("data", buffer, item, progress);
@@ -209,4 +225,8 @@ export class DownloaderService extends EventEmitter {
 export declare interface DownloadItemOptions {
   overwrite?: boolean;
   createDirIfEmpty?: boolean;
+  /**
+   * Ignore check sum steps
+   */
+  ignoreChecksum?: boolean;
 }

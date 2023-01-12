@@ -2,22 +2,44 @@ import { expect } from "chai";
 import path from "path";
 import { DownloaderService } from "./../../src/electron/download/DownloaderService";
 import fs from "fs";
-import { HashableDownloadItem } from "../../src/electron/download/Downloader";
+import {
+  DownloadProgress,
+  HashableDownloadItem,
+} from "../../src/electron/download/Downloader";
+import needle from "needle";
 
 let TEST_OUTPUT_DIRECTORY = process.env.TEST_OUTPUT_DIRECTORY || ".test_output";
 
 describe("DownloadService", () => {
   let downloadService = new DownloaderService();
-  before(() => {
+
+  beforeEach(() => {
     if (!fs.existsSync(TEST_OUTPUT_DIRECTORY)) {
       fs.mkdirSync(TEST_OUTPUT_DIRECTORY, { recursive: true });
     }
+    downloadService = new DownloaderService();
   });
+
   afterEach(() => {
     downloadService.clearItems();
+    /**
+     * Clear item
+     */
+
+    fs.readdirSync(TEST_OUTPUT_DIRECTORY).forEach((item) => {
+      if (fs.existsSync(item)) {
+        fs.rmSync(item);
+      }
+    });
     expect(downloadService.getCurrentDownloadItem()).to.be.undefined;
     expect(downloadService.getItemQueue().size).to.eq(0);
   });
+
+  after(() => {
+    fs.rmSync(TEST_OUTPUT_DIRECTORY, { force: true, recursive: true });
+    expect(fs.existsSync(TEST_OUTPUT_DIRECTORY)).to.be.false;
+  });
+
   it(`Download with empty queue`, () => {
     expect(() => {
       downloadService.downloadItems();
@@ -82,7 +104,86 @@ describe("DownloadService", () => {
       .catch(done);
   });
 
-  it(`Estimate length of packets`, () => {
-    // expect(downloadService.)
+  it(`Prepare items`, () => {
+    expect(downloadService.getCurrentDownloadItem()).to.be.undefined;
+    expect(downloadService.getItemQueue().hasNext()).to.be.false;
+    expect(downloadService.getItemQueue().size).to.eq(0);
+
+    downloadService.addItem({
+      path: path.resolve(TEST_OUTPUT_DIRECTORY, `commons-codec-1.15.jar`),
+      url: "https://libraries.minecraft.net/commons-codec/commons-codec/1.15/commons-codec-1.15.jar",
+      hash: "49d94806b6e3dc933dacbd8acb0fdbab8ebd1e5d",
+    });
+
+    expect(downloadService.getItemQueue().hasNext()).to.be.true;
+    expect(downloadService.getItemQueue().size).to.eq(1);
+
+    // downloadService.addItem()
+  });
+
+  it(`Estimate length of unknown-size packets`, (done) => {
+    let promise: Promise<void> = new Promise((resolve) => {
+      downloadService.addItem({
+        path: path.resolve(TEST_OUTPUT_DIRECTORY, `commons-codec-1.15.jar`),
+        url: "https://libraries.minecraft.net/commons-codec/commons-codec/1.15/commons-codec-1.15.jar",
+        hash: "49d94806b6e3dc933dacbd8acb0fdbab8ebd1e5d",
+      });
+
+      downloadService.downloadItems({
+        createDirIfEmpty: true,
+        ignoreChecksum: true,
+      });
+
+      downloadService.on("completed", () => resolve());
+    });
+
+    promise
+      .then(() => {
+        expect(
+          fs.existsSync(
+            path.resolve(TEST_OUTPUT_DIRECTORY, `commons-codec-1.15.jar`)
+          )
+        ).to.be.true;
+        done();
+      })
+      .catch(done);
+  });
+
+  it(`On: progress`, function async(done) {
+    this.timeout(5000);
+    // Prepare items before download with 2 items
+    for (let i = 0; i < 2; i++) {
+      downloadService.addItem({
+        path: path.resolve(
+          TEST_OUTPUT_DIRECTORY,
+          `commons-codec-1.15-${i}.jar`
+        ),
+        url: "https://libraries.minecraft.net/commons-codec/commons-codec/1.15/commons-codec-1.15.jar",
+        size: 353793,
+        hash: "49d94806b6e3dc933dacbd8acb0fdbab8ebd1e5d",
+      });
+    }
+
+    let mockPromiseTest: Promise<{
+      item: HashableDownloadItem;
+      progress: DownloadProgress;
+    }> = new Promise((resolve, reject) => {
+      downloadService.on("progress", (item, progress) => {
+        resolve({ item, progress });
+      });
+      downloadService.on("error", (err) => reject(err));
+      downloadService.downloadItems({ createDirIfEmpty: true });
+    });
+
+    mockPromiseTest
+      .then(({ item, progress }) => {
+        expect(typeof progress.currentSize).to.eq("number");
+        expect(typeof progress.currentSize).to.eq("number");
+        expect(progress.actualSize).to.eq(progress.currentSize);
+        expect(item).not.to.be.undefined;
+
+        done();
+      })
+      .catch(done);
   });
 });
