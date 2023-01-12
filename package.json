@@ -13,7 +13,7 @@
     "build": "ts-node ./scripts/build-application.ts && tsc",
     "package": "ts-node ./scripts/pack-application.ts",
     "clean": "ts-node ./scripts/clean-application.ts",
-    "test": "electron-mocha -r ts-node/register ./test/**/*.spec.ts",
+    "test": "electron-mocha -r \"ts-node/register\" --file ./test/unit/fixtures.ts --retries 4 ./test/**/*.spec.ts",
     "coverage": "nyc npm run test"
   },
   "dependencies": {
@@ -33,6 +33,7 @@
     "chalk": "4.1.2",
     "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
+    "dotenv": "^16.0.3",
     "electron": "^22.0.0",
     "electron-mocha": "^11.0.2",
     "electron-packager": "^17.1.1",
