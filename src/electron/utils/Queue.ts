@@ -33,7 +33,7 @@ export class Queue<T> {
     } else {
       this.head = this.head.next;
     }
-
+    this.size--;
     return current.value;
   }
 
@@ -67,6 +67,7 @@ export class Queue<T> {
       let firstHead = this.head;
       queueElement.next = firstHead;
     }
+    this.size++;
     this.head = queueElement;
   }
 }
