@@ -24,4 +24,15 @@ describe("Queue test", () => {
 
     expect(queue.toArray()).to.deep.equal([3, 2]);
   });
+  it(`Empty queue exception`, () => {
+    expect(() => {
+      let q = new Queue();
+      q.pop();
+    }).to.throws(/Empty queue/);
+  });
+  it(`Return empty array`, () => {
+    let q = new Queue();
+    expect(q.toArray()).to.be.instanceOf(Array);
+    expect(q.toArray().length).to.eq(0);
+  });
 });
