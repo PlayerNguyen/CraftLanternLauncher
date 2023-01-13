@@ -7,6 +7,9 @@ export function createSha1HashStream(stream: NodeJS.ReadableStream) {
 export function createSha256Stream(stream: NodeJS.ReadableStream) {
   return createHashStream("sha256", stream);
 }
+export function createMd5Stream(stream: NodeJS.ReadableStream) {
+  return createHashStream("md5", stream);
+}
 
 function createHashStream(
   algorithm: string,
