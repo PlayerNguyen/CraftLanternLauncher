@@ -188,4 +188,102 @@ describe("DownloadService", () => {
       })
       .catch(done);
   });
+
+  it(`Download error`, (done) => {
+    let promise: Promise<void> = new Promise((resolve, reject) => {
+      downloadService.addItem({
+        path: path.resolve(TEST_OUTPUT_DIRECTORY, `empty.file`),
+        url: "",
+        hash: "",
+      });
+
+      downloadService.downloadItems({
+        createDirIfEmpty: true,
+        ignoreChecksum: true,
+      });
+
+      downloadService.on("completed", () => resolve());
+      downloadService.on("error", (err) => reject(err));
+    });
+
+    promise.catch((err) => {
+      expect(err).not.to.be.undefined;
+      expect(err).instanceOf(Error);
+      done();
+    });
+  });
+
+  it(`Unable to create a directory`, () => {
+    let mockFn = () => {
+      downloadService.addItem({
+        path: path.resolve(TEST_OUTPUT_DIRECTORY, `empty.file`),
+        url: "",
+        hash: "",
+      });
+
+      downloadService.downloadItems({
+        createDirIfEmpty: false,
+      });
+    };
+
+    expect(mockFn).to.throws(/Unable to create and find path/);
+  });
+
+  it(`Skip next file after corrupted`, function (done) {
+    /**
+     * This could be a long test
+     */
+    this.timeout(10000);
+
+    let mockPromise: Promise<HashableDownloadItem> = new Promise(
+      (resolve, reject) => {
+        downloadService.addItem(
+          {
+            path: path.resolve(
+              TEST_OUTPUT_DIRECTORY,
+              `commons-codec-1.15-corrupted.jar`
+            ),
+            url: "https://libraries.minecraft.net/commons-codec/commons-codec/1.15/commons-codec-1.15.jar",
+            size: 353793,
+            hash: "",
+          },
+          {
+            path: path.resolve(
+              TEST_OUTPUT_DIRECTORY,
+              `commons-codec-1.15-non-corrupted.jar`
+            ),
+            url: "https://libraries.minecraft.net/commons-codec/commons-codec/1.15/commons-codec-1.15.jar",
+            size: 353793,
+            hash: "49d94806b6e3dc933dacbd8acb0fdbab8ebd1e5d",
+          },
+          {
+            path: path.resolve(
+              TEST_OUTPUT_DIRECTORY,
+              `commons-codec-1.15-non-corrupted.jar`
+            ),
+            url: "https://libraries.minecraft.net/commons-codec/commons-codec/1.15/commons-codec-1.15.jar",
+            size: 353793,
+            hash: "49d94806b6e3dc933dacbd8acb0fdbab8ebd1e5d",
+          }
+        );
+        downloadService.downloadItems({
+          createDirIfEmpty: true,
+        });
+
+        downloadService.on("corrupted", (item) => {
+          // downloadService.clearItems();
+          resolve(item);
+        });
+        downloadService.on("error", (err) => reject(err));
+      }
+    );
+
+    mockPromise
+      .then((corruptedItem) => {
+        expect(downloadService.getCurrentDownloadItem()).not.eq(corruptedItem);
+        expect(downloadService.getItemQueue().hasNext()).to.be.true;
+        done();
+      })
+      .catch(done);
+  });
 });
