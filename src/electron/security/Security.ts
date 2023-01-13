@@ -1,8 +1,19 @@
 import crypto from "crypto";
 
 export function createSha1HashStream(stream: NodeJS.ReadableStream) {
-  let sha1 = crypto.createHash("sha1");
-  stream.pipe(sha1);
+  return createHashStream("sha1", stream);
+}
 
-  return sha1;
+export function createSha256Stream(stream: NodeJS.ReadableStream) {
+  return createHashStream("sha256", stream);
+}
+
+function createHashStream(
+  algorithm: string,
+  inputStream: NodeJS.ReadableStream
+) {
+  let _outStream = crypto.createHash(algorithm);
+  inputStream.pipe(_outStream);
+
+  return _outStream;
 }
