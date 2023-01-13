@@ -10,6 +10,7 @@ import {
 import fs from "fs";
 import { Queue } from "../utils/Queue";
 import { createSha1HashStream } from "../security/Security";
+import { Worker } from "worker_threads";
 
 export declare interface DownloaderService {
   on(
