@@ -2,7 +2,6 @@ before(() => {
   /**
    * Requires environment variables for all test suites
    */
-  require("dotenv").config();
 });
 
 after(() => {
