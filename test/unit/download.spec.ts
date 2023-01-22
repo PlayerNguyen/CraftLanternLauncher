@@ -11,10 +11,17 @@ import {
 import { getTestOutputDirectory } from "./utils/file";
 import path from "path";
 import fs from "fs";
+import { isSkippedDownload } from "./utils/download";
 
 const testOutputDir = getTestOutputDirectory();
 
 describe(`download.ts`, () => {
+  if (isSkippedDownload()) {
+    console.log(`Ignore download module`);
+    before(function () {
+      this.skip();
+    });
+  }
   let downloadedItems: string[] = [];
 
   const createSmallSizeDownloadItem = (fileName: string, fileSize?: number) => {
@@ -573,6 +580,12 @@ describe(`download.ts`, () => {
 });
 
 describe("DownloadedEvent", () => {
+  if (isSkippedDownload()) {
+    console.log(`Ignore download module`);
+    before(function () {
+      this.skip();
+    });
+  }
   it("should using appropriate constructor which provides item", () => {
     let firstTest = new DownloadedEvent(
       { path: "a", url: "b", size: 0 },

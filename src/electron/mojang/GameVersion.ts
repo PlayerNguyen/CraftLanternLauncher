@@ -121,6 +121,19 @@ export class GameVersion {
     this.response = response;
   }
 
+  public getCompatibleAdoptiumRuntime() {
+    // 
+
+    if (this.response.javaVersion.majorVersion)
+    throw new Error("Unimplemented ");
+  }
+
+  public isCurrentRuntimeMatch(): boolean {
+    // TODO: compare the current runtime and returns using version sematic
+    // TODO: if version is not set, return false value
+    throw new Error("Unimplemented ");
+  }
+
   /**
    * Get Minecraft required libraries for matching platform.
    *

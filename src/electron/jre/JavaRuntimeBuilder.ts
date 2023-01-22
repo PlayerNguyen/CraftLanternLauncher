@@ -1,4 +1,7 @@
+import fs from "fs";
+import { PathLike } from "fs";
 import needle from "needle";
+import { getRuntimeDirectory, getRuntimeProfileFile } from "../AssetResolver";
 
 export interface AdoptiumAvailableRuntimeResponse {
   available_lts_releases: [number];
@@ -20,4 +23,56 @@ export async function getAdoptiumAvailableRuntimeItems(): Promise<AdoptiumAvaila
   return _response;
 }
 
+/**
+ * Get the runtime existence.
+ *
+ * @returns true if the runtime was installed before, false otherwise
+ */
+export function hasInstalledJavaRuntime() {
+  return (
+    fs.existsSync(getRuntimeDirectory()) &&
+    fs.existsSync(getRuntimeProfileFile())
+  );
+}
+export interface JavaRuntimeProfile {
+  version: string;
+  major: number;
+  path: PathLike;
+}
 
+export interface JavaRuntimeCreateOptions {
+  overwrite?: boolean;
+}
+
+export function createJavaRuntimeProfile(
+  profile: JavaRuntimeProfile,
+  options?: JavaRuntimeCreateOptions
+) {
+  if (
+    fs.existsSync(getRuntimeProfileFile()) &&
+    (!options || !options.overwrite)
+  ) {
+    throw new Error(
+      `Cannot overwrite runtime profile file, using option { overwrite: true }.`
+    );
+  }
+  if (!fs.existsSync(getRuntimeDirectory()))
+    fs.mkdirSync(getRuntimeDirectory());
+  // Write the file into disk
+  fs.writeFileSync(getRuntimeProfileFile(), JSON.stringify(profile));
+}
+
+export function getJavaRuntimeProfile(): JavaRuntimeProfile | undefined {
+  if (!fs.existsSync(getRuntimeProfileFile())) {
+    return undefined;
+  }
+  return JSON.parse(fs.readFileSync(getRuntimeProfileFile(), "utf-8"));
+}
+
+export function getMajorFromProfile(): number | undefined {
+  let currentProfile = getJavaRuntimeProfile();
+  if (!currentProfile) {
+    return undefined;
+  }
+  return currentProfile.major;
+}

@@ -3,8 +3,15 @@ import { fetchAsStream } from "../../src/electron/download/fetch";
 import fs from "fs";
 import path from "path";
 import { getTestOutputDirectory } from "./utils/file";
+import { isSkippedDownload } from "./utils/download";
 
 describe(`fetch.ts`, () => {
+  if (isSkippedDownload()) {
+    console.log(`Ignore download module`);
+    before(function () {
+      this.skip();
+    });
+  }
   it(`should create a stream `, (done) => {
     let stream = fetchAsStream(`https://www.google.com`);
     expect(stream.listeners.length).to.gt(0);
