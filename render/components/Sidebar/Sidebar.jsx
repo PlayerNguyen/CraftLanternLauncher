@@ -1,5 +1,10 @@
+import { useEffect } from "react";
 import { HiHome } from "react-icons/hi";
-import { HiAdjustmentsHorizontal, HiUser } from "react-icons/hi2";
+import {
+  HiAdjustmentsHorizontal,
+  HiCodeBracket,
+  HiUser,
+} from "react-icons/hi2";
 import { useLocation, useNavigate } from "react-router-dom";
 const SIDE_BAR_ITEM = [
   {
@@ -18,6 +23,14 @@ const SIDE_BAR_ITEM = [
     url: "/settings",
   },
 ];
+if (environments.isDevelopment) {
+  SIDE_BAR_ITEM.push({
+    name: "Dev Tools",
+    icon: <HiCodeBracket />,
+    url: "/dev-tools",
+  });
+}
+
 export function Sidebar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();

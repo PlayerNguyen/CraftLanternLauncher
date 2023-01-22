@@ -11,6 +11,7 @@ import { IconContext } from "react-icons";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { Home } from "./components/Home/Home";
 import { RouteWrapper } from "./components/RouteWrapper";
+import { DevTools } from "./components/DevTools/DevTools";
 
 export function App() {
   const [isLoading, setLoading] = useState(true);
@@ -37,6 +38,7 @@ export function App() {
               <RouteWrapper>
                 <Routes>
                   <Route path="/" element={<Home />}></Route>
+                  <Route path="/dev-tools" element={<DevTools />}></Route>
                 </Routes>
               </RouteWrapper>
             </div>
