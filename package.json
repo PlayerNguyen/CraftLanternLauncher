@@ -10,7 +10,7 @@
     "dev": "npm run clean && cross-env NODE_ENV=development concurrently \"npm:watch-*\" --exit",
     "watch-render": "ts-node ./scripts/watch-render",
     "watch-electron": "wait-on file:./dist/render && concurrently \"tsc -w\" \"wait-on file:./dist/src && electronmon ./dist/src/index.js\" ",
-    "build": "ts-node ./scripts/build-application.ts && tsc",
+    "build": "tsc && ts-node ./scripts/build-application.ts",
     "package": "ts-node ./scripts/pack-application.ts",
     "clean": "ts-node ./scripts/clean-application.ts",
     "test": "electron-mocha ./test/**/*.spec.ts",
