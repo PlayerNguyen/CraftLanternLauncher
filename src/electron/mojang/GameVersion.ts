@@ -290,9 +290,8 @@ export class GameVersionStorage {
   }
 
   /**
-   *
+   * Remove the game version which loaded
    * @param versionId the version id to remove
-   * @returns
    */
   public static remove(versionId: string) {
     return this.gameVersionLoaded.delete(versionId);
