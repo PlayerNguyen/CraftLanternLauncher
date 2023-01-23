@@ -1,6 +1,18 @@
+import {
+  createWriteStream,
+  existsSync,
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+} from "original-fs";
 import { isLinux, isMacOs, isWindows } from "../utils/Platform";
 import os from "os";
 import { arch } from "../utils/Arch";
+import { MinecraftManifestStorage } from "./MinecraftVersionManifest";
+import { getVersionsDirectory } from "../AssetResolver";
+import path from "path";
+import { fetchAsStream } from "../download/fetch";
+import needle from "needle";
 export type GameVersionAction = "allow" | "deny";
 
 export interface GameVersionGameArguments {
@@ -121,11 +133,17 @@ export class GameVersion {
     this.response = response;
   }
 
-  public getCompatibleAdoptiumRuntime() {
-    // 
-
-    if (this.response.javaVersion.majorVersion)
-    throw new Error("Unimplemented ");
+  public getMajorRuntimeUrl(): string {
+    let major = this.response.javaVersion.majorVersion;
+    let systemArch = arch();
+    let imageType = "jdk";
+    let jvmImplementation = "hotspot";
+    let os = isMacOs() ? "mac" : isLinux() ? "linux" : "windows";
+    let releaseType = "ga";
+    let heapSize = "normal";
+    let vendor = "eclipse";
+    const adoptiumUrl = `https://api.adoptium.net/v3`;
+    return `${adoptiumUrl}/binary/latest/${major}/${releaseType}/${os}/${systemArch}/${imageType}/${jvmImplementation}/${heapSize}/${vendor}?project=jdk`;
   }
 
   public isCurrentRuntimeMatch(): boolean {
@@ -217,4 +235,66 @@ export function testWithRegExp(
 ): boolean {
   const _reg = new RegExp(regexpPattern);
   return _reg.test(string);
+}
+
+export class GameVersionStorage {
+  private static gameVersionLoaded: Map<string, GameVersion> = new Map();
+
+  /**
+   * Get the game version which is downloaded in asset directory, or fetch from
+   * manifest storage.
+   *
+   * @param versionId the game version id
+   */
+  public static get(versionId: string): Promise<GameVersion> {
+    return new Promise<GameVersion>((resolve, reject) => {
+      // Get from memory
+      let fromMap = this.gameVersionLoaded.get(versionId);
+      if (fromMap) {
+        return resolve(fromMap);
+      }
+
+      // Get from file
+      let versionFileName = path.resolve(
+        getVersionsDirectory(),
+        `${versionId}.json`
+      );
+      if (existsSync(getVersionsDirectory()) && existsSync(versionFileName)) {
+        let parsedGameVersion = JSON.parse(
+          readFileSync(versionFileName, "utf-8")
+        );
+        this.gameVersionLoaded.set(versionId, parsedGameVersion);
+        return resolve(parsedGameVersion);
+      }
+
+      // Get from minecraft api and version manifest
+      if (!existsSync(getVersionsDirectory())) {
+        mkdirSync(getVersionsDirectory());
+      }
+      let _version = MinecraftManifestStorage.getVersionFromId(versionId);
+      if (!_version) {
+        throw new Error(`Cannot determine version ${versionId}`);
+      }
+
+      needle("get", _version.url.toString(), { parse: true })
+        .then((response) => {
+          let body = response.body;
+          this.gameVersionLoaded.set(versionId, response.body);
+          writeFileSync(versionFileName, JSON.stringify(body));
+          resolve(body);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  }
+
+  /**
+   *
+   * @param versionId the version id to remove
+   * @returns
+   */
+  public static remove(versionId: string) {
+    return this.gameVersionLoaded.delete(versionId);
+  }
 }

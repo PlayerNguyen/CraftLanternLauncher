@@ -1,6 +1,8 @@
+import path from "path";
 import {
   GameVersionLibraryRule,
   GameVersionLibraryRuleFilter,
+  GameVersionStorage,
 } from "./../../src/electron/mojang/GameVersion";
 import {
   GameVersion,
@@ -9,9 +11,14 @@ import {
 import { GameVersionResponse } from "./../../src/electron/mojang/GameVersion";
 import { expect } from "chai";
 import needle from "needle";
-import { GameVersionParser } from "../../src/electron/mojang/GameVersion";
 import { MinecraftManifestStorage } from "../../src/electron/mojang/MinecraftVersionManifest";
 import { resetFakePlatform, setFakePlatform } from "./utils/fake-os";
+import { resetFakeArch, setFakeArch } from "../../src/electron/utils/Arch";
+import { existsSync, rm, rmSync } from "original-fs";
+import {
+  getAssetsDirPath,
+  getVersionsDirectory,
+} from "../../src/electron/AssetResolver";
 
 describe("GameVersion", () => {
   let gameVersionResponse: GameVersionResponse;
@@ -113,6 +120,47 @@ describe("GameVersion", () => {
 
     // Non-rule library test: must contains some non-rule libs
     expect(gameLibForWindows.some((lib) => !lib.rules)).to.be.true;
+  });
+
+  describe(`Returns runtime url for compatible operating system`, () => {
+    afterEach(() => {
+      resetFakePlatform();
+      resetFakeArch();
+    });
+
+    it(`MacOS`, () => {
+      setFakePlatform("darwin");
+      expect(gameVersionObject.getMajorRuntimeUrl()).includes("mac");
+      expect(gameVersionObject.getMajorRuntimeUrl()).includes("x64");
+    });
+
+    it(`Windows ~ 32bit arch`, () => {
+      setFakePlatform("windows");
+      setFakeArch("x32");
+      expect(gameVersionObject.getMajorRuntimeUrl()).includes("windows");
+      expect(gameVersionObject.getMajorRuntimeUrl()).includes("x32");
+    });
+
+    it(`Windows ~ 64bit arch`, () => {
+      setFakePlatform("windows");
+      setFakeArch("x64");
+      expect(gameVersionObject.getMajorRuntimeUrl()).includes("windows");
+      expect(gameVersionObject.getMajorRuntimeUrl()).includes("x64");
+      console.log(gameVersionObject.getMajorRuntimeUrl());
+    });
+
+    it(`Linux ~ 32bit arch`, () => {
+      setFakePlatform("linux");
+      setFakeArch("x32");
+      expect(gameVersionObject.getMajorRuntimeUrl()).includes("linux");
+      expect(gameVersionObject.getMajorRuntimeUrl()).includes("x32");
+    });
+    it(`Linux ~ 64bit arch`, () => {
+      setFakePlatform("linux");
+      setFakeArch("x64");
+      expect(gameVersionObject.getMajorRuntimeUrl()).includes("linux");
+      expect(gameVersionObject.getMajorRuntimeUrl()).includes("x64");
+    });
   });
 });
 
@@ -235,5 +283,54 @@ describe("Library filter", () => {
     );
     expect(GameVersionLibraryRuleFilter.accept(windowsLibrary)).to.be.false;
     resetFakePlatform();
+  });
+});
+
+describe("GameVersionStorage", () => {
+  before(() => {
+    rmSync(getVersionsDirectory(), { force: true, recursive: true });
+  });
+
+  it("should get from nothing (force download)", (done) => {
+    GameVersionStorage.get("1.12")
+      .then((version) => {
+        expect(version).not.to.be.undefined;
+        expect(existsSync(getVersionsDirectory()), "Exist the main directory")
+          .to.be.true;
+        expect(
+          existsSync(path.resolve(getVersionsDirectory(), "1.12.json")),
+          "Exist the json file"
+        ).to.be.true;
+        done();
+      })
+      .catch(done);
+  });
+
+  it(`should throws when provide unknown minecraft game version`, (done) => {
+    GameVersionStorage.get("this is unknown version").catch((err) => {
+      expect(err.message).to.include("Cannot determine version");
+      done();
+    });
+  });
+
+  it(`should make a directory before download file`, (done) => {
+    GameVersionStorage.get("1.12")
+      .then((_gameVersion: GameVersion) => {
+        expect(existsSync(getVersionsDirectory())).to.be.true;
+        expect(_gameVersion).not.to.be.undefined;
+        done();
+      })
+      .catch(done);
+  });
+
+  it(`should get from local machine file`, (done) => {
+    GameVersionStorage.remove("1.12");
+    GameVersionStorage.get("1.12")
+      .then((_gameVersion: GameVersion) => {
+        expect(_gameVersion).to.not.be.undefined;
+
+        done();
+      })
+      .catch(done);
   });
 });
