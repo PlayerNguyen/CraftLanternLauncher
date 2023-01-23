@@ -2,9 +2,9 @@ import { Button } from "../Button/Button";
 
 export function DevTools() {
   const handleDownloadLatest = () => {
-    alert(`Downloading latest version`);
+    // alert(`Downloading latest version`);
 
-    
+    asset.download("1.19.2");
   };
   return (
     <div className="px-6 py-12">

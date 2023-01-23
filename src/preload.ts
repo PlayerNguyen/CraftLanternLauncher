@@ -30,3 +30,8 @@ contextBridge.exposeInMainWorld("launcher", {
   handleError: (callback: any) => ipcRenderer.on("launcher:error", callback),
   clearErrorChannels: () => ipcRenderer.removeAllListeners("launcher:error"),
 });
+
+contextBridge.exposeInMainWorld("asset", {
+  download: (versionId: string) =>
+    ipcRenderer.send("asset:download", versionId),
+});
