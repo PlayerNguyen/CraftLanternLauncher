@@ -116,6 +116,12 @@ export class Download extends EventEmitter {
     this.progress = new Progress();
   }
 
+  public addItem(...items: DownloadItem[] | HashableDownloadItem[]) {
+    for (let item of items) {
+      this.downloadQueue.push(item);
+    }
+  }
+
   public setVerbose(verbose: boolean) {
     this.verbose = verbose;
   }
@@ -152,7 +158,7 @@ export class Download extends EventEmitter {
       }
 
       const downloadStream = fetchAsStream(url);
-      const writeStream = fs.createWriteStream(itemPath);
+      const writeStream = fs.createWriteStream(itemPath, {});
 
       // Register events
       downloadStream.on("response", (response: http.IncomingMessage) => {
@@ -185,7 +191,7 @@ export class Download extends EventEmitter {
       downloadStream.on("data", (buffer) => {
         // Update the progress size and emit progress data
         this.progress.setProgressSize(
-          this.progress.getProgressSize + buffer.length
+          this.progress.getProgressSize() + buffer.length
         );
         this.emit("data", buffer, willDownloadItem, this.progress);
       });
@@ -215,7 +221,10 @@ export class Download extends EventEmitter {
         }
       }
 
-      downloadStream.on("close", () => {
+      downloadStream.on("done", (err) => {
+        if (err) {
+          return this.emit("error", err);
+        }
         if (
           hashableWillDownloadItem.hash &&
           _hashStream.digest("hex") !== hashableWillDownloadItem.hash.value
