@@ -6,6 +6,10 @@ export function DevTools() {
 
     asset.download("1.19.2");
   };
+
+  const handleOpenLauncherDirectory = () => {
+    launcher.openLauncherDirectory();
+  };
   return (
     <div className="px-6 py-12">
       {/* Header */}
@@ -21,6 +25,18 @@ export function DevTools() {
           </button>
 
           <button className="btn btn-primary btn-md">Clean asset</button>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4 px-12 py-4">
+        <div>File system</div>
+        <div className="flex flex-row gap-3">
+          <button
+            className="btn btn-primary btn-md"
+            onClick={handleOpenLauncherDirectory}
+          >
+            Open launcher directory
+          </button>
         </div>
       </div>
     </div>

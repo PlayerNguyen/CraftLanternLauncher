@@ -9,10 +9,14 @@ import { isLinux, isMacOs, isWindows } from "../utils/Platform";
 import os from "os";
 import { arch } from "../utils/Arch";
 import { MinecraftManifestStorage } from "./MinecraftVersionManifest";
-import { getVersionsDirectory } from "../AssetResolver";
+import {
+  getRuntimeProfileFileName,
+  getVersionsDirectory,
+} from "../AssetResolver";
 import path from "path";
 import { fetchAsStream } from "../download/fetch";
 import needle from "needle";
+import { getJavaRuntimeProfile } from "../jre/JavaRuntimeBuilder";
 export type GameVersionAction = "allow" | "deny";
 
 export interface GameVersionGameArguments {
@@ -146,10 +150,24 @@ export class GameVersion {
     return `${adoptiumUrl}/binary/latest/${major}/${releaseType}/${os}/${systemArch}/${imageType}/${jvmImplementation}/${heapSize}/${vendor}?project=jdk`;
   }
 
+  public getRuntimeAssetMetadataUrl() {
+    let major = this.response.javaVersion.majorVersion;
+    let architecture = arch();
+    let jvmImplementation = "hotspot";
+    let imageType = "jdk";
+    let os = isMacOs() ? "mac" : isLinux() ? "linux" : "windows";
+    let vendor = "eclipse";
+
+    return `https://api.adoptium.net/v3/assets/latest/${major}/${jvmImplementation}?architecture=${architecture}&image_type=${imageType}&os=${os}&vendor=${vendor}`;
+  }
+
   public isCurrentRuntimeMatch(): boolean {
-    // TODO: compare the current runtime and returns using version sematic
-    // TODO: if version is not set, return false value
-    throw new Error("Unimplemented ");
+    let profile = getJavaRuntimeProfile();
+    if (!profile) {
+      return false;
+    }
+
+    return this.response.javaVersion.majorVersion === profile.major;
   }
 
   /**
@@ -182,6 +200,10 @@ export class GameVersion {
   public buildCompatibleParameters(): string[] {
     //TODO: do something with this please
     return [];
+  }
+
+  public getGameVersionResponse() {
+    return this.response;
   }
 }
 
@@ -264,7 +286,7 @@ export class GameVersionStorage {
           readFileSync(versionFileName, "utf-8")
         );
         this.gameVersionLoaded.set(versionId, parsedGameVersion);
-        return resolve(parsedGameVersion);
+        return resolve(new GameVersion(parsedGameVersion));
       }
 
       // Get from minecraft api and version manifest
@@ -279,7 +301,7 @@ export class GameVersionStorage {
       needle("get", _version.url.toString(), { parse: true })
         .then((response) => {
           let body = response.body;
-          this.gameVersionLoaded.set(versionId, response.body);
+          this.gameVersionLoaded.set(versionId, new GameVersion(response.body));
           writeFileSync(versionFileName, JSON.stringify(body));
           resolve(body);
         })
@@ -296,4 +318,57 @@ export class GameVersionStorage {
   public static remove(versionId: string) {
     return this.gameVersionLoaded.delete(versionId);
   }
+}
+
+export interface AdoptiumInstaller {
+  checksum: string;
+  checksum_link: string;
+  download_count: number;
+  link: string;
+  metadata_link: string;
+  name: string;
+  signature_link: string;
+  size: number;
+}
+
+export interface AdoptiumPackage {
+  checksum: string;
+  checksum_link: string;
+  download_count: number;
+  link: string;
+  metadata_link: string;
+  name: string;
+  signature_link: string;
+  size: number;
+}
+
+export interface AdoptiumBinary {
+  architecture: string;
+  download_count: number;
+  heap_size: string;
+  image_type: string;
+  installer: AdoptiumInstaller;
+  jvm_impl: string;
+  os: string;
+  package: AdoptiumPackage;
+  project: string;
+  scm_ref: string;
+  updated_at: Date;
+}
+
+export interface AdoptiumVersion {
+  build: number;
+  major: number;
+  minor: number;
+  openjdk_version: string;
+  security: number;
+  semver: string;
+}
+
+export interface AdoptiumResponse {
+  binary: AdoptiumBinary;
+  release_link: string;
+  release_name: string;
+  vendor: string;
+  version: AdoptiumVersion;
 }

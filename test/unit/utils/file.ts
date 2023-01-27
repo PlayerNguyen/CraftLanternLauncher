@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import fs from "fs";
+import path from 'path';
 
 export function getTestOutputDirectory() {
   const _output = process.env.TEST_OUTPUT_DIRECTORY || ".test_output";
@@ -12,4 +13,8 @@ export function getTestOutputDirectory() {
   }
 
   return _output;
+}
+
+export function getTestInputAssetDirectory() {
+  return path.resolve(`test`, `unit`, `assets`);
 }

@@ -1,6 +1,7 @@
 import { ipcMain } from "electron";
 import { SendAssetDownloadListener } from "./IpcAssetListener";
 import { InvokeGetConfigListener } from "./IpcConfigListener";
+import { IpcSendLauncherOpenDirectory } from "./IpcLauncherListener";
 import {
   IpcMainListener,
   IpcMainInvokeListener,
@@ -43,5 +44,6 @@ export function getStdListeners(): IpcMainListener[] {
     new InvokeAddProfileListener(),
     new InvokeGetConfigListener(),
     new SendAssetDownloadListener(),
+    new IpcSendLauncherOpenDirectory(),
   ];
 }

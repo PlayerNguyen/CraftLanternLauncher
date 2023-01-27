@@ -7,12 +7,25 @@ import cp from "child_process";
 import fs from "fs";
 import path from "path";
 
+export type FakeArch = "x32" | "x64" | undefined;
+let fakeArch: FakeArch;
+
+export function setFakeArch(value: FakeArch) {
+  fakeArch = value;
+}
+
+export function resetFakeArch() {
+  fakeArch = undefined;
+}
 /**
  * Returns the operating system's CPU architecture. This is different than
  * `process.arch` or `os.arch()` which returns the architecture the Node.js (or
  * Electron) binary was compiled for.
  */
 export function arch() {
+  if (fakeArch !== undefined) {
+    return fakeArch;
+  }
   /**
    * The running binary is 64-bit, so the OS is clearly 64-bit.
    */

@@ -12,6 +12,7 @@ import {
   createSha1HashStream,
   createSha256Stream,
 } from "../security/Security";
+import needle from "needle";
 
 export interface DownloadItem {
   path: PathLike | string;
@@ -158,7 +159,7 @@ export class Download extends EventEmitter {
       }
 
       const downloadStream = fetchAsStream(url);
-      const writeStream = fs.createWriteStream(itemPath, {});
+      const writeStream = fs.createWriteStream(itemPath);
 
       // Register events
       downloadStream.on("response", (response: http.IncomingMessage) => {
@@ -273,6 +274,10 @@ export class Download extends EventEmitter {
     } catch (error) {
       this.emit(`error`, error);
     }
+  }
+
+  public isEmpty() {
+    return !this.downloadQueue.hasNext();
   }
 }
 

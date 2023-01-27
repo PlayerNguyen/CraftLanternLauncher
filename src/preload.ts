@@ -29,6 +29,9 @@ contextBridge.exposeInMainWorld("launcher", {
   clearBootChannel: () => ipcRenderer.removeAllListeners("launcher:boot"),
   handleError: (callback: any) => ipcRenderer.on("launcher:error", callback),
   clearErrorChannels: () => ipcRenderer.removeAllListeners("launcher:error"),
+
+
+  openLauncherDirectory: () => ipcRenderer.send("launcher:open-launcher-directory")
 });
 
 contextBridge.exposeInMainWorld("asset", {

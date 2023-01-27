@@ -1,7 +1,10 @@
 import fs from "fs";
 import { PathLike } from "fs";
 import needle from "needle";
-import { getRuntimeDirectory, getRuntimeProfileFile } from "../AssetResolver";
+import {
+  getRuntimeDirectory,
+  getRuntimeProfileFileName,
+} from "../AssetResolver";
 
 export interface AdoptiumAvailableRuntimeResponse {
   available_lts_releases: [number];
@@ -31,7 +34,7 @@ export async function getAdoptiumAvailableRuntimeItems(): Promise<AdoptiumAvaila
 export function hasInstalledJavaRuntime() {
   return (
     fs.existsSync(getRuntimeDirectory()) &&
-    fs.existsSync(getRuntimeProfileFile())
+    fs.existsSync(getRuntimeProfileFileName())
   );
 }
 export interface JavaRuntimeProfile {
@@ -49,7 +52,7 @@ export function createJavaRuntimeProfile(
   options?: JavaRuntimeCreateOptions
 ) {
   if (
-    fs.existsSync(getRuntimeProfileFile()) &&
+    fs.existsSync(getRuntimeProfileFileName()) &&
     (!options || !options.overwrite)
   ) {
     throw new Error(
@@ -59,14 +62,14 @@ export function createJavaRuntimeProfile(
   if (!fs.existsSync(getRuntimeDirectory()))
     fs.mkdirSync(getRuntimeDirectory());
   // Write the file into disk
-  fs.writeFileSync(getRuntimeProfileFile(), JSON.stringify(profile));
+  fs.writeFileSync(getRuntimeProfileFileName(), JSON.stringify(profile));
 }
 
 export function getJavaRuntimeProfile(): JavaRuntimeProfile | undefined {
-  if (!fs.existsSync(getRuntimeProfileFile())) {
+  if (!fs.existsSync(getRuntimeProfileFileName())) {
     return undefined;
   }
-  return JSON.parse(fs.readFileSync(getRuntimeProfileFile(), "utf-8"));
+  return JSON.parse(fs.readFileSync(getRuntimeProfileFileName(), "utf-8"));
 }
 
 export function getMajorFromProfile(): number | undefined {

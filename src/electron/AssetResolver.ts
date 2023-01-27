@@ -40,8 +40,12 @@ export function getRuntimeDirectory() {
   return path.resolve(getApplicationDataPath(), "runtime");
 }
 
-export function getRuntimeProfileFile() {
+export function getRuntimeProfileFileName() {
   return path.resolve(getRuntimeDirectory(), "runtime_profile.json");
+}
+
+export function getVersionsDirectory() {
+  return path.resolve(getApplicationDataPath(), "versions");
 }
 
 export {

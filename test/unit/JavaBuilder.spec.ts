@@ -5,7 +5,7 @@ import {
 import { expect } from "chai";
 import {
   getRuntimeDirectory,
-  getRuntimeProfileFile,
+  getRuntimeProfileFileName,
 } from "../../src/electron/AssetResolver";
 import {
   createJavaRuntimeProfile,
@@ -22,8 +22,8 @@ after(() => {
 });
 
 afterEach(() => {
-  fs.rmSync(getRuntimeProfileFile(), { force: true, recursive: true });
-  expect(fs.existsSync(getRuntimeProfileFile())).to.be.false;
+  fs.rmSync(getRuntimeProfileFileName(), { force: true, recursive: true });
+  expect(fs.existsSync(getRuntimeProfileFileName())).to.be.false;
 });
 
 describe("Get JDK version list from Adoptium API", () => {
@@ -71,7 +71,7 @@ describe(`createJavaRuntimeProfile`, () => {
       path: path.resolve(getRuntimeDirectory(), "jdk-major"),
     });
 
-    expect(fs.existsSync(getRuntimeProfileFile())).to.be.true;
+    expect(fs.existsSync(getRuntimeProfileFileName())).to.be.true;
     expect(() => {
       createJavaRuntimeProfile({
         major: 8,
@@ -89,7 +89,7 @@ describe(`createJavaRuntimeProfile`, () => {
       version: "8.1.0",
       path: path.resolve(getRuntimeDirectory(), "jdk-major"),
     });
-    expect(fs.existsSync(getRuntimeProfileFile())).to.be.true;
+    expect(fs.existsSync(getRuntimeProfileFileName())).to.be.true;
 
     expect(() => {
       createJavaRuntimeProfile(
@@ -102,9 +102,9 @@ describe(`createJavaRuntimeProfile`, () => {
       );
     }).to.not.throws();
 
-    expect(fs.existsSync(getRuntimeProfileFile())).to.be.true;
+    expect(fs.existsSync(getRuntimeProfileFileName())).to.be.true;
     const runtimeProfile: JavaRuntimeProfile = JSON.parse(
-      fs.readFileSync(getRuntimeProfileFile(), "utf-8")
+      fs.readFileSync(getRuntimeProfileFileName(), "utf-8")
     );
     expect(runtimeProfile).to.not.undefined;
     expect(runtimeProfile).have.own.property("major");
