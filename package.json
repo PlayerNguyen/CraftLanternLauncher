@@ -10,15 +10,17 @@
     "dev": "npm run clean && cross-env NODE_ENV=development concurrently \"npm:watch-*\" --exit",
     "watch-render": "ts-node ./scripts/watch-render",
     "watch-electron": "wait-on file:./dist/render && concurrently \"tsc -w\" \"wait-on file:./dist/src && electronmon ./dist/src/index.js\" ",
-    "build": "ts-node ./scripts/build-application.ts && tsc",
+    "build": "tsc && ts-node ./scripts/build-application.ts",
     "package": "ts-node ./scripts/pack-application.ts",
     "clean": "ts-node ./scripts/clean-application.ts",
-    "test": "electron-mocha -r ts-node/register ./test/**/*.spec.ts",
+    "test": "electron-mocha ./test/**/*.spec.ts",
     "coverage": "nyc npm run test"
   },
   "dependencies": {
+    "@types/unzipper": "^0.10.5",
     "needle": "^3.2.0",
     "react-icons": "^4.7.1",
+    "unzipper": "^0.10.11",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
@@ -33,6 +35,7 @@
     "chalk": "4.1.2",
     "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
+    "dotenv": "^16.0.3",
     "electron": "^22.0.0",
     "electron-mocha": "^11.0.2",
     "electron-packager": "^17.1.1",

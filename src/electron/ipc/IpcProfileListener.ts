@@ -4,6 +4,7 @@ import { IpcMainInvokeListener } from "./IpcMainListener";
 import * as uuid from "uuid";
 export class InvokeGetProfileListener extends IpcMainInvokeListener {
   name: string = "profile:get";
+  type = "invoke";
   listen: (event: IpcMainInvokeEvent, ...args: any[]) => any = () => {
     return ProfileStorage.getProfileList();
   };
@@ -11,6 +12,7 @@ export class InvokeGetProfileListener extends IpcMainInvokeListener {
 
 export class InvokeAddProfileListener extends IpcMainInvokeListener {
   name = "profile.add";
+  type = "invoke";
   listen: (event: IpcMainInvokeEvent, ...args: any[]) => any = (
     _event,
     args

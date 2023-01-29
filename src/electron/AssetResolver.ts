@@ -36,6 +36,22 @@ function getAssetsDirPath() {
   return path.resolve(getApplicationDataPath(), "assets");
 }
 
+export function getGameLibraryDirectory() {
+  return path.resolve(getApplicationDataPath(), "libraries");
+}
+
+export function getRuntimeDirectory() {
+  return path.resolve(getApplicationDataPath(), "runtime");
+}
+
+export function getRuntimeProfileFileName() {
+  return path.resolve(getRuntimeDirectory(), "runtime_profile.json");
+}
+
+export function getVersionsDirectory() {
+  return path.resolve(getApplicationDataPath(), "versions");
+}
+
 export {
   getAppPath,
   getApplicationDataPath,

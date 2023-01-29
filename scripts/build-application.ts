@@ -1,4 +1,5 @@
 import { Parcel } from "@parcel/core";
+import chalk from "chalk";
 
 let bundler = new Parcel({
   entries: "./render/index.html",
@@ -16,7 +17,15 @@ let bundler = new Parcel({
 (async () => {
   // Bundling react application
   const event = await bundler.run();
-  console.log(`Bundling render in ${event.buildTime} ms inside ${event.type}`);
+  if (event.type === "buildSuccess") {
+    console.log(
+      chalk.green(
+        `✨ Successfully build render ${chalk.gray(`(${event.buildTime} ms)`)} `
+      )
+    );
+  }
+
+  // TODO: minify typescript exact code
 
   // Then build an electron
 })().catch(console.error);
