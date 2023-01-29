@@ -1,9 +1,12 @@
 import chalk from "chalk";
 import fs from "fs";
-import path from 'path';
+import path from "path";
 
 export function getTestOutputDirectory() {
-  const _output = process.env.TEST_OUTPUT_DIRECTORY || ".test_output";
+  const _output = path.resolve(
+    process.cwd(),
+    process.env.TEST_OUTPUT_DIRECTORY || ".test_output"
+  );
 
   if (!fs.existsSync(_output)) {
     console.log(
