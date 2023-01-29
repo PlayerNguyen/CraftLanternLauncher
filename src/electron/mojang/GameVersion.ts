@@ -137,6 +137,10 @@ export class GameVersion {
     this.response = response;
   }
 
+  public getId() : string {
+    return this.response.id;
+  }
+
   public getMajorRuntimeUrl(): string {
     let major = this.response.javaVersion.majorVersion;
     let systemArch = arch();
@@ -195,6 +199,10 @@ export class GameVersion {
     }
 
     return arr;
+  }
+
+  public getGameAssetsIndexObject() {
+    return this.response.assetIndex;
   }
 
   public buildCompatibleParameters(): string[] {
@@ -272,6 +280,10 @@ export class GameVersionStorage {
     return new Promise<GameVersion>((resolve, reject) => {
       // Get from memory
       let fromMap = this.gameVersionLoaded.get(versionId);
+      console.log(
+        `Getting version id ${versionId} from memory: value ${fromMap}`
+      );
+
       if (fromMap) {
         return resolve(fromMap);
       }
@@ -281,15 +293,22 @@ export class GameVersionStorage {
         getVersionsDirectory(),
         `${versionId}.json`
       );
+      console.log(`Trying to get version id ${versionId} from file`);
       if (existsSync(getVersionsDirectory()) && existsSync(versionFileName)) {
+        console.log(`Found the version from file ${versionFileName}`);
+
         let parsedGameVersion = JSON.parse(
           readFileSync(versionFileName, "utf-8")
         );
-        this.gameVersionLoaded.set(versionId, parsedGameVersion);
+        this.gameVersionLoaded.set(
+          versionId,
+          new GameVersion(parsedGameVersion)
+        );
         return resolve(new GameVersion(parsedGameVersion));
       }
 
       // Get from minecraft api and version manifest
+      console.log(`Trying to fetch version of Minecraft API`);
       if (!existsSync(getVersionsDirectory())) {
         mkdirSync(getVersionsDirectory());
       }

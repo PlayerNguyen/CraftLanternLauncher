@@ -1,21 +1,29 @@
 import { PathLike } from "fs";
-import { DownloadedEvent, HashableDownloadItem } from "./../download/download";
-import { AdoptiumBinary, AdoptiumResponse } from "./../mojang/GameVersion";
+import { HashableDownloadItem } from "./../download/download";
+import { AdoptiumResponse } from "./../mojang/GameVersion";
 import needle from "needle";
 import { MinecraftManifestStorage } from "./../mojang/MinecraftVersionManifest";
 
 import { IpcMainInvokeEvent } from "electron";
-import { cp, cpSync, existsSync, mkdirSync, rmSync } from "original-fs";
-import { getAssetsDirPath, getRuntimeDirectory } from "../AssetResolver";
-import { Download, DownloadItem } from "../download/download";
+import { cpSync, existsSync, mkdirSync, rmSync } from "original-fs";
+import {
+  getAssetsDirPath,
+  getGameLibraryDirectory,
+  getRuntimeDirectory,
+} from "../AssetResolver";
+import { Download } from "../download/download";
 import { GameVersion, GameVersionStorage } from "../mojang/GameVersion";
-import { getManifestVersionV2Url } from "../mojang/MojangUrl";
+
 import { IpcMainInvokeListener } from "./IpcMainListener";
 import path from "path";
 import chalk from "chalk";
 import { isLinux, isMacOs, isWindows } from "../utils/Platform";
 import { extractTarGzip, extractZip } from "../archive";
 import { createJavaRuntimeProfile } from "../jre/JavaRuntimeBuilder";
+import {
+  getGameAssetChildDirectoryFromHash,
+  getGameAssetUrlFromHash,
+} from "../mojang/GameAssetIndex";
 
 export class SendAssetDownloadListener implements IpcMainInvokeListener {
   name = "asset:download";
@@ -42,7 +50,6 @@ export class SendAssetDownloadListener implements IpcMainInvokeListener {
     console.log(
       `Compare with current runtime major version: result ${gameVersion.isCurrentRuntimeMatch()}...`
     );
-
     // Game runtime check and download
     let _download = new Download();
 
@@ -131,6 +138,14 @@ export class SendAssetDownloadListener implements IpcMainInvokeListener {
           }`
         );
       })
+      .then(() => {
+        handleDownloadAssets(gameVersion, _download);
+      })
+      .then(() => {
+        console.log(
+          `Successfully download game asset for ${gameVersion.getId()}`
+        );
+      })
       .catch(console.error);
   };
 }
@@ -175,24 +190,24 @@ function handleDownloadRuntime(
 function handleDownloadLibraries(gameVersion: GameVersion, download: Download) {
   return new Promise<void>((res, rej) => {
     let requestedLibraries = gameVersion.getRequestedLibrary();
-    // for (let requestedLibrary of requestedLibraries) {
-
-    // }
+    // Eliminate the existed file
     let willDownloadLibraries = requestedLibraries.filter(
       (library) =>
         library.downloads &&
         !existsSync(
           path.resolve(
-            getAssetsDirPath(),
+            getGameLibraryDirectory(),
             library.downloads?.artifact.path.toString()
           )
         )
     );
-
+    // Not found downloads.artifacts
     for (let willDownloadItem of willDownloadLibraries) {
       if (!willDownloadItem.downloads) {
-        throw new Error(
-          `Unexpected value ${willDownloadItem}, not found downloads.artifact`
+        return rej(
+          new Error(
+            `Unexpected value ${willDownloadItem}, not found downloads.artifact`
+          )
         );
       }
 
@@ -203,7 +218,7 @@ function handleDownloadLibraries(gameVersion: GameVersion, download: Download) {
         url,
       } = willDownloadItem.downloads?.artifact;
       const downloadItem = {
-        path: path.resolve(getAssetsDirPath(), _path),
+        path: path.resolve(getGameLibraryDirectory(), _path),
         size,
         url,
         hash: {
@@ -227,5 +242,50 @@ function handleDownloadLibraries(gameVersion: GameVersion, download: Download) {
     } else {
       res();
     }
+  });
+}
+
+async function handleDownloadAssets(
+  gameVersion: GameVersion,
+  download: Download
+) {
+  const gameAssetIndexResponse = await needle(
+    "get",
+    gameVersion.getGameAssetsIndexObject().url
+  );
+  return new Promise<void>((resolve, reject) => {
+    // const gameAssetMap = new Map<string, { hash: string; size: number }>();
+    // Deserialize the game asset since it is using map-object type
+    Object.keys(gameAssetIndexResponse.body.objects).forEach((str) => {
+      // gameAssetMap.set(str, gameAssetIndexResponse.body.objects[str]);
+      // Put to download queue if the file is not exist
+      const { hash, size } = gameAssetIndexResponse.body.objects[str];
+      const filePath = path.resolve(
+        getAssetsDirPath(),
+        "objects",
+        getGameAssetChildDirectoryFromHash(hash)
+      );
+      if (!existsSync(filePath)) {
+        const downloadItem = {
+          path: filePath,
+          size,
+          url: getGameAssetUrlFromHash(hash),
+          hash: {
+            algorithm: `sha1`,
+            value: hash,
+          },
+        };
+        console.log(downloadItem);
+        download.addItem(downloadItem);
+      }
+    });
+    if (!download.isEmpty()) download.start({ mkdirIfNotExists: true });
+    download.on("done", () => {
+      resolve();
+    });
+    download.on("error", (error) => {
+      reject(error);
+    });
+    // console.log(gameAssetMap);
   });
 }
