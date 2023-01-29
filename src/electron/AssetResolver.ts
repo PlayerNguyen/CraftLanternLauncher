@@ -4,11 +4,18 @@ import { app } from "electron";
 import { getApplicationShortName } from "./Application";
 
 function getAppPath() {
-  return path.resolve(app.getAppPath());
+  return process.env.NODE_ENV === "testing"
+    ? `./test-output`
+    : path.join(app.getAppPath());
 }
 
 function getApplicationDataPath() {
-  return path.resolve(app.getPath("appData"), getApplicationShortName());
+  return path.resolve(
+    process.env.NODE_ENV === "testing"
+      ? `./test-app-data-output`
+      : app.getPath("appData"),
+    getApplicationShortName()
+  );
 }
 
 function setupDirectory() {
@@ -21,35 +28,35 @@ function setupDirectory() {
 }
 
 function getConfigPath() {
-  return path.resolve(getApplicationDataPath(), "config.json");
+  return path.join(getApplicationDataPath(), "config.json");
 }
 
 function getVersionManifestPath() {
-  return path.resolve(getApplicationDataPath(), "manifest_v2.json");
+  return path.join(getApplicationDataPath(), "manifest_v2.json");
 }
 
 function getProfilePath() {
-  return path.resolve(getApplicationDataPath(), "profiles.json");
+  return path.join(getApplicationDataPath(), "profiles.json");
 }
 
 function getAssetsDirPath() {
-  return path.resolve(getApplicationDataPath(), "assets");
+  return path.join(getApplicationDataPath(), "assets");
 }
 
 export function getGameLibraryDirectory() {
-  return path.resolve(getApplicationDataPath(), "libraries");
+  return path.join(getApplicationDataPath(), "libraries");
 }
 
 export function getRuntimeDirectory() {
-  return path.resolve(getApplicationDataPath(), "runtime");
+  return path.join(getApplicationDataPath(), "runtime");
 }
 
 export function getRuntimeProfileFileName() {
-  return path.resolve(getRuntimeDirectory(), "runtime_profile.json");
+  return path.join(getRuntimeDirectory(), "runtime_profile.json");
 }
 
 export function getVersionsDirectory() {
-  return path.resolve(getApplicationDataPath(), "versions");
+  return path.join(getApplicationDataPath(), "versions");
 }
 
 export {

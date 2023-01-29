@@ -5,6 +5,10 @@
   "version": "1.0.0-alpha",
   "license": "MIT",
   "main": "./dist/src/index.js",
+  "repository": {
+    "url": "https://github.com/PlayerNguyen/crafting-table-launcher"
+  },
+  "private": true,
   "scripts": {
     "start": "ts-node ./scripts/check-build.ts && electron ./dist/src/index.js",
     "dev": "npm run clean && cross-env NODE_ENV=development concurrently \"npm:watch-*\" --exit",
@@ -13,7 +17,7 @@
     "build": "tsc && ts-node ./scripts/build-application.ts",
     "package": "ts-node ./scripts/pack-application.ts",
     "clean": "ts-node ./scripts/clean-application.ts",
-    "test": "electron-mocha ./test/**/*.spec.ts",
+    "test": "cross-env NODE_ENV=testing mocha ./test/**/*.spec.ts",
     "coverage": "nyc npm run test"
   },
   "dependencies": {
@@ -38,7 +42,6 @@
     "cross-env": "^7.0.3",
     "dotenv": "^16.0.3",
     "electron": "^22.0.0",
-    "electron-mocha": "^11.0.2",
     "electron-packager": "^17.1.1",
     "electronmon": "^2.0.2",
     "mocha": "^10.2.0",
