@@ -14,7 +14,7 @@ import needle from "needle";
 import { MinecraftManifestStorage } from "../../src/electron/mojang/MinecraftVersionManifest";
 import { resetFakePlatform, setFakePlatform } from "./utils/fake-os";
 import { resetFakeArch, setFakeArch } from "../../src/electron/utils/Arch";
-import { existsSync, rm, rmSync } from "original-fs";
+import { existsSync, rm, rmSync } from "fs";
 import {
   getAssetsDirPath,
   getVersionsDirectory,

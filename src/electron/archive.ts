@@ -1,11 +1,6 @@
 import { PathLike } from "fs";
 import { spawn } from "child_process";
-import {
-  createReadStream,
-  createWriteStream,
-  existsSync,
-  mkdirSync,
-} from "original-fs";
+import { createReadStream, createWriteStream, existsSync, mkdirSync } from "fs";
 import { isWindows } from "./utils/Platform";
 import unzip from "unzipper";
 import stream from "stream";

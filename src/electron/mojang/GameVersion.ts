@@ -4,7 +4,7 @@ import {
   readFileSync,
   writeFileSync,
   mkdirSync,
-} from "original-fs";
+} from "fs";
 import { isLinux, isMacOs, isWindows } from "../utils/Platform";
 import os from "os";
 import { arch } from "../utils/Arch";
@@ -137,7 +137,7 @@ export class GameVersion {
     this.response = response;
   }
 
-  public getId() : string {
+  public getId(): string {
     return this.response.id;
   }
 
