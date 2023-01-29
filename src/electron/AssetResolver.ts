@@ -12,7 +12,7 @@ function getAppPath() {
 function getApplicationDataPath() {
   return path.resolve(
     process.env.NODE_ENV === "testing"
-      ? `./test-app-data-output`
+      ? path.join(`test-output`, `appData`)
       : app.getPath("appData"),
     getApplicationShortName()
   );

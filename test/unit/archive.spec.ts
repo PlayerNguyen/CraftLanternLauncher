@@ -8,7 +8,7 @@ import {
 import path from "path";
 
 after(() => {
-  rmSync(path.resolve(getTestInputAssetDirectory(), `archive`), {
+  rmSync(path.join(getTestInputAssetDirectory(), `archive`), {
     force: true,
     recursive: true,
   });
@@ -24,8 +24,8 @@ describe(`.tar.gz extension test`, () => {
 
   it(`should extract a tar gz contains folder inside`, (done) => {
     extractTarGzip(
-      path.resolve(getTestInputAssetDirectory(), `archive.tar.gz`),
-      path.resolve(getTestInputAssetDirectory())
+      path.join(getTestInputAssetDirectory(), `archive.tar.gz`),
+      path.join(getTestInputAssetDirectory())
     )
       .then(() => {
         expect(
@@ -44,7 +44,7 @@ describe(`.tar.gz extension test`, () => {
         ).to.be.eq("1");
       })
       .then(() => {
-        rmSync(path.resolve(getTestInputAssetDirectory(), `archive`), {
+        rmSync(path.join(getTestInputAssetDirectory(), `archive`), {
           force: true,
           recursive: true,
         });
@@ -57,8 +57,8 @@ describe(`.tar.gz extension test`, () => {
 describe(`zip extract test`, () => {
   it(`should extract zip files / directories`, (done) => {
     extractZip(
-      path.resolve(getTestInputAssetDirectory(), `archive.zip`),
-      path.resolve(getTestInputAssetDirectory())
+      path.join(getTestInputAssetDirectory(), `archive.zip`),
+      path.join(getTestInputAssetDirectory())
     )
       .then(() => {
         expect(
