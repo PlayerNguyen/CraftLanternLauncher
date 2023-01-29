@@ -5,7 +5,7 @@ import { getApplicationShortName } from "./Application";
 
 function getAppPath() {
   return process.env.NODE_ENV === "testing"
-    ? `./test-output`
+    ? `test-output`
     : path.join(app.getAppPath());
 }
 
