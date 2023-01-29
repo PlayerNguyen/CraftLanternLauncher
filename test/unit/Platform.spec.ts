@@ -3,12 +3,18 @@ import { isLinux, isMacOs, isWindows } from "../../src/electron/utils/Platform";
 import { resetFakePlatform, setFakePlatform } from "./utils/fake-os";
 
 describe("Fake operating system mock test", () => {
-  it("Fake to darwinx", () => {
+  it("should fake to darwinx", () => {
     setFakePlatform("darwinx");
     expect(process.platform).to.eq("darwinx");
     // Reset test
     resetFakePlatform();
-    expect(process.platform).to.eq("darwin");
+  });
+
+  it(`should reset environment`, () => {
+    resetFakePlatform();
+    expect(process.platform).to.eq(
+      isLinux() ? `linux` : isMacOs() ? `darwin` : `win32`
+    );
   });
 });
 
