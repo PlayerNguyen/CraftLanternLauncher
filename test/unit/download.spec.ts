@@ -46,13 +46,13 @@ describe(`download.ts`, () => {
 
     // Clean up this if available
     // Clean up - Remove the directory
-    let somewhereDirectory = path.resolve(testOutputDir, "somewhere-here");
-    if (fs.existsSync(somewhereDirectory)) {
-      fs.rmSync(somewhereDirectory, {
-        recursive: true,
-        force: true,
-      });
-    }
+    // let somewhereDirectory = path.resolve(testOutputDir, "somewhere-here");
+    // if (fs.existsSync(somewhereDirectory)) {
+    //   fs.rmSync(somewhereDirectory, {
+    //     recursive: true,
+    //     // force: true,
+    //   });
+    // }
   });
 
   it(`should send data event`, function (done) {
