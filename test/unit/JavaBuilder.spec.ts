@@ -1,3 +1,4 @@
+import { existsSync } from "fs";
 import {
   getJavaRuntimeProfile,
   JavaRuntimeProfile,
@@ -18,12 +19,13 @@ import { isSkippedDownload } from "./utils/download";
 import { rmNonEmptyDir } from "../../src/electron/FileSystem";
 
 after(() => {
-  rmNonEmptyDir(getRuntimeDirectory());
+  if (existsSync(getRuntimeDirectory())) rmNonEmptyDir(getRuntimeDirectory());
   expect(fs.existsSync(getRuntimeDirectory())).to.be.false;
 });
 
 afterEach(() => {
-  rmNonEmptyDir(getRuntimeProfileFileName());
+  if (existsSync(getRuntimeProfileFileName()))
+    rmNonEmptyDir(getRuntimeProfileFileName());
   expect(fs.existsSync(getRuntimeProfileFileName())).to.be.false;
 });
 
