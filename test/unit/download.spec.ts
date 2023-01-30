@@ -39,7 +39,6 @@ describe(`download.ts`, () => {
   };
 
   afterEach(() => {
-
     // Clean up this if available
     // Clean up - Remove the directory
     let somewhereDirectory = path.join(testOutputDir, "somewhere-here");
@@ -160,9 +159,7 @@ describe(`download.ts`, () => {
 
       expect(
         fs.existsSync(
-          path.dirname(
-            path.join(testOutputDir, "somewhere-here", "test.jar")
-          )
+          path.dirname(path.join(testOutputDir, "somewhere-here", "test.jar"))
         )
       ).to.be.true;
     }).to.not.throws();
