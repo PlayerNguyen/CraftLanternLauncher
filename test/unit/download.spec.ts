@@ -39,11 +39,11 @@ describe(`download.ts`, () => {
   };
 
   afterEach(() => {
-    downloadedItems.forEach((path) => {
-      if (fs.existsSync(path)) {
-        rmNonEmptyDir(path);
+    for (let itemPath in downloadedItems) {
+      if (fs.existsSync(itemPath)) {
+        rmNonEmptyDir(itemPath);
       }
-    });
+    }
 
     // Clean up this if available
     // Clean up - Remove the directory
