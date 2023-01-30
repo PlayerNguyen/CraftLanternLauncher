@@ -47,7 +47,7 @@ describe(`download.ts`, () => {
 
     // Clean up this if available
     // Clean up - Remove the directory
-    let somewhereDirectory = path.resolve(testOutputDir, "somewhere-here");
+    let somewhereDirectory = path.join(testOutputDir, "somewhere-here");
     if (fs.existsSync(somewhereDirectory)) {
       rmNonEmptyDir(somewhereDirectory);
     }
