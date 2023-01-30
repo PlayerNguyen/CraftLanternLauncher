@@ -5,7 +5,7 @@ import path from "path";
 export function getTestOutputDirectory() {
   const _output = path.resolve(
     process.cwd(),
-    process.env.TEST_OUTPUT_DIRECTORY || ".test_output"
+    process.env.TEST_OUTPUT_DIRECTORY || "test_output"
   );
 
   if (!fs.existsSync(_output)) {
