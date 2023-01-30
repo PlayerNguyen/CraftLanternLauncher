@@ -14,7 +14,7 @@ export function getTestOutputDirectory() {
     console.log(
       chalk.green(`Generating test output directory ${chalk.gray(_output)}`)
     );
-    fs.mkdirSync(_output);
+    fs.mkdirSync(_output, { recursive: true });
   }
 
   return _output;
