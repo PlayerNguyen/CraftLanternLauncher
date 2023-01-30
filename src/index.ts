@@ -16,7 +16,7 @@ let window: BrowserWindow | null = null;
 
 async function beforeLoadWindow() {
   // Setup the launcher directory
-  console.log(`Using ${getApplicationDataPath()} as appData `);
+  console.log(`Application data path: ${getApplicationDataPath()}`);
   setupDirectory();
 }
 function loadWindow() {
