@@ -26,9 +26,9 @@ describe(`download.ts`, () => {
   let downloadedItems: string[] = [];
 
   const createSmallSizeDownloadItem = (fileName: string, fileSize?: number) => {
-    downloadedItems.push(path.resolve(testOutputDir, fileName));
+    downloadedItems.push(path.join(testOutputDir, fileName));
     return {
-      path: path.resolve(testOutputDir, fileName),
+      path: path.join(testOutputDir, fileName),
       url: "https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar",
       size: fileSize,
       hash: {
@@ -39,11 +39,6 @@ describe(`download.ts`, () => {
   };
 
   afterEach(() => {
-    for (let itemPath in downloadedItems) {
-      if (fs.existsSync(itemPath)) {
-        rmNonEmptyDir(itemPath);
-      }
-    }
 
     // Clean up this if available
     // Clean up - Remove the directory
@@ -136,7 +131,7 @@ describe(`download.ts`, () => {
   it(`should throws when stream to non-exists directory`, () => {
     expect(() => {
       const download = new Download({
-        path: path.resolve(testOutputDir, "somewhere-here", "test.jar"),
+        path: path.join(testOutputDir, "somewhere-here", "test.jar"),
         url: "https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar",
         size: 964,
         hash: {
@@ -152,7 +147,7 @@ describe(`download.ts`, () => {
   it(`should create directory when options { mkdirIfNotExists }`, () => {
     expect(() => {
       const download = new Download({
-        path: path.resolve(testOutputDir, "somewhere-here", "test.jar"),
+        path: path.join(testOutputDir, "somewhere-here", "test.jar"),
         url: "https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar",
         size: 964,
         hash: {
@@ -166,7 +161,7 @@ describe(`download.ts`, () => {
       expect(
         fs.existsSync(
           path.dirname(
-            path.resolve(testOutputDir, "somewhere-here", "test.jar")
+            path.join(testOutputDir, "somewhere-here", "test.jar")
           )
         )
       ).to.be.true;
@@ -176,7 +171,7 @@ describe(`download.ts`, () => {
   it(`should throws with unsupported algorithm`, () => {
     expect(() => {
       const download = new Download({
-        path: path.resolve(testOutputDir, "test.jar"),
+        path: path.join(testOutputDir, "test.jar"),
         url: "https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar",
         size: 964,
         hash: {
@@ -190,7 +185,7 @@ describe(`download.ts`, () => {
   });
 
   it(`should downloaded with sha256`, (done) => {
-    let fileName = path.resolve(testOutputDir, "test.jar");
+    let fileName = path.join(testOutputDir, "test.jar");
     let promise: Promise<void> = new Promise((resolve) => {
       downloadedItems.push(fileName);
       const download = new Download({
@@ -223,7 +218,7 @@ describe(`download.ts`, () => {
   });
 
   it(`should downloaded with sha1`, (done) => {
-    let fileName = path.resolve(testOutputDir, "test.jar");
+    let fileName = path.join(testOutputDir, "test.jar");
     let promise: Promise<void> = new Promise((resolve) => {
       downloadedItems.push(fileName);
       const download = new Download({
@@ -255,7 +250,7 @@ describe(`download.ts`, () => {
   });
 
   it(`should downloaded with non-hash`, (done) => {
-    let fileName = path.resolve(testOutputDir, "test.jar");
+    let fileName = path.join(testOutputDir, "test.jar");
     let promise: Promise<void> = new Promise((resolve) => {
       downloadedItems.push(fileName);
       const download = new Download({
@@ -283,7 +278,7 @@ describe(`download.ts`, () => {
   });
 
   it(`should fetch as Buffer format (not JSON)`, function (done) {
-    let fileName = path.resolve(testOutputDir, `1.19.3.json`);
+    let fileName = path.join(testOutputDir, `1.19.3.json`);
     downloadedItems.push(fileName);
 
     const download = new Download({
@@ -305,7 +300,7 @@ describe(`download.ts`, () => {
   it(`should emit done after downloaded`, function (done) {
     this.timeout(5000);
 
-    let fileName = path.resolve(testOutputDir, `1.19.3.json`);
+    let fileName = path.join(testOutputDir, `1.19.3.json`);
     downloadedItems.push(fileName);
 
     const promise: Promise<DownloadedEvent[]> = new Promise((res, rej) => {
@@ -346,11 +341,11 @@ describe(`download.ts`, () => {
     const promise: Promise<DownloadedEvent> = new Promise((res, _rej) => {
       const download = new Download(
         {
-          path: path.resolve(testOutputDir, `1.19.3_first.json`),
+          path: path.join(testOutputDir, `1.19.3_first.json`),
           url: `https://piston-meta.mojang.com/v1/packages/6607feafdb2f96baad9314f207277730421a8e76/1.19.3.json`,
         },
         {
-          path: path.resolve(testOutputDir, `1.19.3_second.json`),
+          path: path.join(testOutputDir, `1.19.3_second.json`),
           url: `https://piston-meta.mojang.com/v1/packages/6607feafdb2f96baad9314f207277730421a8e76/1.19.3.json`,
           hash: {
             algorithm: "sha1",
@@ -360,8 +355,8 @@ describe(`download.ts`, () => {
       );
 
       downloadedItems.push(
-        path.resolve(testOutputDir, `1.19.3_first.json`),
-        path.resolve(testOutputDir, `1.19.3_second.json`)
+        path.join(testOutputDir, `1.19.3_first.json`),
+        path.join(testOutputDir, `1.19.3_second.json`)
       );
       download.on("progress", (history) => {
         res(history);
@@ -387,7 +382,7 @@ describe(`download.ts`, () => {
     this.slow();
     let sampleDownloadItem: HashableDownloadItem[] = [
       {
-        path: path.resolve(testOutputDir, "blocklist-1"),
+        path: path.join(testOutputDir, "blocklist-1"),
         size: 946,
         url: "https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar",
         hash: {
@@ -396,7 +391,7 @@ describe(`download.ts`, () => {
         },
       },
       {
-        path: path.resolve(testOutputDir, "blocklist-2"),
+        path: path.join(testOutputDir, "blocklist-2"),
         size: 946,
         url: "https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar",
         hash: {
@@ -405,7 +400,7 @@ describe(`download.ts`, () => {
         },
       },
       {
-        path: path.resolve(testOutputDir, "blocklist-3"),
+        path: path.join(testOutputDir, "blocklist-3"),
         size: 946,
         url: "https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar",
         hash: {
@@ -447,7 +442,7 @@ describe(`download.ts`, () => {
 
     let sampleDownloadItem: HashableDownloadItem[] = [
       {
-        path: path.resolve(testOutputDir, "blocklist-1"),
+        path: path.join(testOutputDir, "blocklist-1"),
         size: 946,
         url: "https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar",
         hash: {
@@ -457,7 +452,7 @@ describe(`download.ts`, () => {
       },
       // Corrupted file
       {
-        path: path.resolve(testOutputDir, "blocklist-2"),
+        path: path.join(testOutputDir, "blocklist-2"),
         size: 946,
         url: "https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar",
         hash: {
@@ -466,7 +461,7 @@ describe(`download.ts`, () => {
         },
       },
       {
-        path: path.resolve(testOutputDir, "blocklist-3"),
+        path: path.join(testOutputDir, "blocklist-3"),
         size: 946,
         url: "https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar",
         hash: {
@@ -504,7 +499,7 @@ describe(`download.ts`, () => {
 
     let sampleDownloadItem: HashableDownloadItem[] = [
       {
-        path: path.resolve(testOutputDir, "blocklist-1.0.10.jar"),
+        path: path.join(testOutputDir, "blocklist-1.0.10.jar"),
         size: 946,
         url: "https://libraries.minecraft.net/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar",
         hash: {
@@ -513,7 +508,7 @@ describe(`download.ts`, () => {
         },
       },
       {
-        path: path.resolve(testOutputDir, "failureaccess-1.0.1.jar"),
+        path: path.join(testOutputDir, "failureaccess-1.0.1.jar"),
         size: 4617,
         url: "https://libraries.minecraft.net/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar",
         hash: {
@@ -552,7 +547,7 @@ describe(`download.ts`, () => {
     let attempt = 0;
     let maxAttemptSize = 8;
 
-    const fileName = path.resolve(testOutputDir, "blocklist-1.0.10.jar");
+    const fileName = path.join(testOutputDir, "blocklist-1.0.10.jar");
     const downloader = new Download({
       path: fileName,
       size: 946,
