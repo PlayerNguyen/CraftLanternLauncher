@@ -1,4 +1,3 @@
-import { rimraf } from "rimraf";
 import {
   DownloadedEvent,
   HashableDownloadItem,
@@ -13,6 +12,7 @@ import { getTestOutputDirectory } from "./utils/file";
 import path from "path";
 import fs from "fs";
 import { isSkippedDownload } from "./utils/download";
+import { rmNonEmptyDir } from "../../src/electron/FileSystem";
 
 const testOutputDir = getTestOutputDirectory();
 
@@ -41,7 +41,7 @@ describe(`download.ts`, () => {
   afterEach(() => {
     downloadedItems.forEach((path) => {
       if (fs.existsSync(path)) {
-        rimraf.sync(path);
+        rmNonEmptyDir(path);
       }
     });
 
@@ -49,7 +49,7 @@ describe(`download.ts`, () => {
     // Clean up - Remove the directory
     let somewhereDirectory = path.resolve(testOutputDir, "somewhere-here");
     if (fs.existsSync(somewhereDirectory)) {
-      rimraf.sync(somewhereDirectory);
+      rmNonEmptyDir(somewhereDirectory);
     }
   });
 

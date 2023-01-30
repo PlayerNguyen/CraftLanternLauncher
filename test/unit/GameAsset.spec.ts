@@ -1,4 +1,3 @@
-import { rimraf } from "rimraf";
 import { existsSync } from "fs";
 import path from "path";
 import { Download } from "./../../src/electron/download/download";
@@ -8,6 +7,7 @@ import {
   getGameAssetUrlFromHash,
 } from "../../src/electron/mojang/GameAssetIndex";
 import { getTestOutputDirectory } from "./utils/file";
+import { rmNonEmptyDir } from "../../src/electron/FileSystem";
 
 describe(`getGameAssetUrlFromHash`, () => {
   it(`should return a url with first 2 characters of the hash, and the true hash`, () => {
@@ -51,7 +51,7 @@ describe(`getGameAssetUrlFromHash`, () => {
       })
       .then(() => {
         // Clean up
-        rimraf.sync(
+        rmNonEmptyDir(
           path.dirname(getGameAssetChildDirectoryFromHash(hashOfItem))
         );
       })

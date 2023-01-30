@@ -1,4 +1,3 @@
-import { rimraf } from "rimraf";
 import { PathLike } from "fs";
 import { HashableDownloadItem } from "./../download/download";
 import { AdoptiumResponse } from "./../mojang/GameVersion";
@@ -25,6 +24,7 @@ import {
   getGameAssetChildDirectoryFromHash,
   getGameAssetUrlFromHash,
 } from "../mojang/GameAssetIndex";
+import { rmNonEmptyDir } from "../FileSystem";
 
 export class SendAssetDownloadListener implements IpcMainInvokeListener {
   name = "asset:download";
@@ -111,8 +111,8 @@ export class SendAssetDownloadListener implements IpcMainInvokeListener {
 
           // Then remove tmp directory
           console.log(`Cleaning 'tmp' directory`);
-          if (existsSync(tempDirectory)) rimraf.sync(tempDirectory);
-          if (existsSync(downloadDirectory)) rimraf.sync(downloadDirectory);
+          if (existsSync(tempDirectory)) rmNonEmptyDir(tempDirectory);
+          if (existsSync(downloadDirectory)) rmNonEmptyDir(downloadDirectory);
           return dataDirectory;
         })
         .then((dataDirectory: string) => {

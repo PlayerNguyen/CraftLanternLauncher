@@ -1,4 +1,3 @@
-import { rimraf } from "rimraf";
 import {
   getJavaRuntimeProfile,
   JavaRuntimeProfile,
@@ -16,14 +15,15 @@ import {
 import path from "path";
 import fs from "fs";
 import { isSkippedDownload } from "./utils/download";
+import { rmNonEmptyDir } from "../../src/electron/FileSystem";
 
 after(() => {
-  rimraf.sync(getRuntimeDirectory());
+  rmNonEmptyDir(getRuntimeDirectory());
   expect(fs.existsSync(getRuntimeDirectory())).to.be.false;
 });
 
 afterEach(() => {
-  rimraf.sync(getRuntimeProfileFileName());
+  rmNonEmptyDir(getRuntimeProfileFileName());
   expect(fs.existsSync(getRuntimeProfileFileName())).to.be.false;
 });
 

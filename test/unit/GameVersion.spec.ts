@@ -1,4 +1,3 @@
-import { rimraf } from "rimraf";
 import path from "path";
 import {
   GameVersionLibraryRule,
@@ -16,10 +15,8 @@ import { MinecraftManifestStorage } from "../../src/electron/mojang/MinecraftVer
 import { resetFakePlatform, setFakePlatform } from "./utils/fake-os";
 import { resetFakeArch, setFakeArch } from "../../src/electron/utils/Arch";
 import { existsSync } from "fs";
-import {
-  getAssetsDirPath,
-  getVersionsDirectory,
-} from "../../src/electron/AssetResolver";
+import { getVersionsDirectory } from "../../src/electron/AssetResolver";
+import { rmNonEmptyDir } from "../../src/electron/FileSystem";
 
 describe("GameVersion", () => {
   let gameVersionResponse: GameVersionResponse;
@@ -289,7 +286,7 @@ describe("Library filter", () => {
 
 describe("GameVersionStorage", () => {
   before(() => {
-    rimraf.sync(getVersionsDirectory());
+    rmNonEmptyDir(getVersionsDirectory());
   });
 
   it("should get from nothing (force download)", (done) => {
