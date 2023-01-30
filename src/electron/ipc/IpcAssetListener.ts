@@ -1,3 +1,4 @@
+import { rimraf } from "rimraf";
 import { PathLike } from "fs";
 import { HashableDownloadItem } from "./../download/download";
 import { AdoptiumResponse } from "./../mojang/GameVersion";
@@ -5,7 +6,7 @@ import needle from "needle";
 import { MinecraftManifestStorage } from "./../mojang/MinecraftVersionManifest";
 
 import { IpcMainInvokeEvent } from "electron";
-import { cpSync, existsSync, mkdirSync, rmSync } from "original-fs";
+import { cpSync, existsSync, mkdirSync } from "fs";
 import {
   getAssetsDirPath,
   getGameLibraryDirectory,
@@ -110,10 +111,8 @@ export class SendAssetDownloadListener implements IpcMainInvokeListener {
 
           // Then remove tmp directory
           console.log(`Cleaning 'tmp' directory`);
-          if (existsSync(tempDirectory))
-            rmSync(tempDirectory, { force: true, recursive: true });
-          if (existsSync(downloadDirectory))
-            rmSync(downloadDirectory, { force: true, recursive: true });
+          if (existsSync(tempDirectory)) rimraf.sync(tempDirectory);
+          if (existsSync(downloadDirectory)) rimraf.sync(downloadDirectory);
           return dataDirectory;
         })
         .then((dataDirectory: string) => {

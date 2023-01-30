@@ -1,3 +1,4 @@
+import { rimraf } from "rimraf";
 import {
   DownloadedEvent,
   HashableDownloadItem,
@@ -40,19 +41,16 @@ describe(`download.ts`, () => {
   afterEach(() => {
     downloadedItems.forEach((path) => {
       if (fs.existsSync(path)) {
-        fs.rmSync(path, { force: true, recursive: true });
+        rimraf.sync(path);
       }
     });
 
     // Clean up this if available
     // Clean up - Remove the directory
-    // let somewhereDirectory = path.resolve(testOutputDir, "somewhere-here");
-    // if (fs.existsSync(somewhereDirectory)) {
-    //   fs.rmSync(somewhereDirectory, {
-    //     recursive: true,
-    //     // force: true,
-    //   });
-    // }
+    let somewhereDirectory = path.resolve(testOutputDir, "somewhere-here");
+    if (fs.existsSync(somewhereDirectory)) {
+      rimraf.sync(somewhereDirectory);
+    }
   });
 
   it(`should send data event`, function (done) {

@@ -1,4 +1,5 @@
-import chalk from "chalk";
+import rimraf from "rimraf";
+
 import http from "http";
 import crypto from "crypto";
 import { EventEmitter } from "events";
@@ -12,7 +13,6 @@ import {
   createSha1HashStream,
   createSha256Stream,
 } from "../security/Security";
-import needle from "needle";
 
 export interface DownloadItem {
   path: PathLike | string;
@@ -244,7 +244,7 @@ export class Download extends EventEmitter {
             );
 
             // Remove the corrupted file
-            fs.rmSync(willDownloadItem.path, { force: true });
+            rimraf.sync(willDownloadItem.path.toString());
             console.error(
               new Error(`File has been corrupted ${willDownloadItem.path}`)
             );

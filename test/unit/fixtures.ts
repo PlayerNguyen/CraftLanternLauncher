@@ -1,9 +1,7 @@
 import chalk from "chalk";
-import { rmSync } from "fs";
 import { mkdirSync } from "fs";
 import { existsSync } from "fs";
-import { accessSync } from "fs";
-import fs from "fs";
+import rimraf from "rimraf";
 import { getApplicationDataPath } from "../../src/electron/AssetResolver";
 import { getTestOutputDirectory } from "./utils/file";
 before(() => {
@@ -24,7 +22,7 @@ after(() => {
    * Clean up test code here
    */
   if (existsSync(getApplicationDataPath())) {
-    rmSync(getApplicationDataPath(), { force: true, recursive: true });
+    rimraf.sync(getApplicationDataPath());
   }
 
   console.log(
@@ -33,6 +31,6 @@ after(() => {
     )
   );
   if (existsSync(getTestOutputDirectory())) {
-    rmSync(getTestOutputDirectory(), { force: true, recursive: true });
+    rimraf.sync(getTestOutputDirectory());
   }
 });

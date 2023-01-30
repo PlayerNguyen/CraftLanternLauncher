@@ -1,3 +1,4 @@
+import { rimraf } from "rimraf";
 import {
   getJavaRuntimeProfile,
   JavaRuntimeProfile,
@@ -17,12 +18,12 @@ import fs from "fs";
 import { isSkippedDownload } from "./utils/download";
 
 after(() => {
-  fs.rmSync(getRuntimeDirectory(), { recursive: true, force: true });
+  rimraf.sync(getRuntimeDirectory());
   expect(fs.existsSync(getRuntimeDirectory())).to.be.false;
 });
 
 afterEach(() => {
-  fs.rmSync(getRuntimeProfileFileName(), { force: true, recursive: true });
+  rimraf.sync(getRuntimeProfileFileName());
   expect(fs.existsSync(getRuntimeProfileFileName())).to.be.false;
 });
 

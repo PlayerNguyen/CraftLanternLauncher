@@ -1,3 +1,4 @@
+import { rimraf } from "rimraf";
 import path from "path";
 import {
   GameVersionLibraryRule,
@@ -14,7 +15,7 @@ import needle from "needle";
 import { MinecraftManifestStorage } from "../../src/electron/mojang/MinecraftVersionManifest";
 import { resetFakePlatform, setFakePlatform } from "./utils/fake-os";
 import { resetFakeArch, setFakeArch } from "../../src/electron/utils/Arch";
-import { existsSync, rm, rmSync } from "fs";
+import { existsSync } from "fs";
 import {
   getAssetsDirPath,
   getVersionsDirectory,
@@ -288,7 +289,7 @@ describe("Library filter", () => {
 
 describe("GameVersionStorage", () => {
   before(() => {
-    rmSync(getVersionsDirectory(), { force: true, recursive: true });
+    rimraf.sync(getVersionsDirectory());
   });
 
   it("should get from nothing (force download)", (done) => {

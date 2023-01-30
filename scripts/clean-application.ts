@@ -1,9 +1,9 @@
-import fs from "fs";
+import rimraf from "rimraf";
 
 const CLEAN_DIRECTORIES_LIST = ["dist", "build", ".parcel-cache"];
 
 (async () => {
   CLEAN_DIRECTORIES_LIST.forEach((item) => {
-    fs.rmSync(item, { recursive: true, force: true });
+    rimraf.sync(item);
   });
 })().catch(console.error);

@@ -1,5 +1,6 @@
+import { rimraf } from "rimraf";
 import { expect } from "chai";
-import { existsSync, readFileSync, rmSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { extractTarGzip, extractZip } from "../../src/electron/archive";
 import {
   getTestInputAssetDirectory,
@@ -8,10 +9,7 @@ import {
 import path from "path";
 
 after(() => {
-  rmSync(path.join(getTestInputAssetDirectory(), `archive`), {
-    force: true,
-    recursive: true,
-  });
+  rimraf.sync(path.join(getTestInputAssetDirectory(), `archive`));
 });
 describe(`.tar.gz extension test`, () => {
   it(`should throws with non-exist file`, (done) => {
@@ -44,10 +42,7 @@ describe(`.tar.gz extension test`, () => {
         ).to.be.eq("1");
       })
       .then(() => {
-        rmSync(path.join(getTestInputAssetDirectory(), `archive`), {
-          force: true,
-          recursive: true,
-        });
+        rimraf(path.join(getTestInputAssetDirectory(), `archive`));
         done();
       })
       .catch(done);

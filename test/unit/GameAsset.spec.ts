@@ -1,4 +1,5 @@
-import { existsSync, rmSync } from "fs";
+import { rimraf } from "rimraf";
+import { existsSync } from "fs";
 import path from "path";
 import { Download } from "./../../src/electron/download/download";
 import { expect } from "chai";
@@ -50,10 +51,9 @@ describe(`getGameAssetUrlFromHash`, () => {
       })
       .then(() => {
         // Clean up
-        rmSync(path.dirname(getGameAssetChildDirectoryFromHash(hashOfItem)), {
-          recursive: true,
-          force: true,
-        });
+        rimraf.sync(
+          path.dirname(getGameAssetChildDirectoryFromHash(hashOfItem))
+        );
       })
       .then(done)
       .catch(done);
