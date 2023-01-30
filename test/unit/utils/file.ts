@@ -1,10 +1,12 @@
 import chalk from "chalk";
 import fs from "fs";
 import path from "path";
+import { getApplicationDataPath } from "../../../src/electron/AssetResolver";
+import { isWindows } from "./../../../src/electron/utils/Platform";
 
 export function getTestOutputDirectory() {
-  const _output = path.resolve(
-    process.cwd(),
+  const _output = path.join(
+    isWindows() ? getApplicationDataPath() : process.cwd(),
     process.env.TEST_OUTPUT_DIRECTORY || "test_output"
   );
 
