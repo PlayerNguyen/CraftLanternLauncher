@@ -1,8 +1,8 @@
 import chalk from "chalk";
-import { rmSync } from "fs";
 import { mkdirSync } from "fs";
 import { existsSync } from "fs";
 import { getApplicationDataPath } from "../../src/electron/AssetResolver";
+import { rmNonEmptyDir } from "../../src/electron/FileSystem";
 import { getTestOutputDirectory } from "./utils/file";
 before(() => {
   /**
@@ -22,7 +22,7 @@ after(() => {
    * Clean up test code here
    */
   if (existsSync(getApplicationDataPath())) {
-    rmSync(getApplicationDataPath(), { force: true, recursive: true });
+    rmNonEmptyDir(getApplicationDataPath());
   }
 
   console.log(
@@ -31,6 +31,6 @@ after(() => {
     )
   );
   if (existsSync(getTestOutputDirectory())) {
-    rmSync(getTestOutputDirectory(), { force: true, recursive: true });
+    rmNonEmptyDir(getTestOutputDirectory());
   }
 });

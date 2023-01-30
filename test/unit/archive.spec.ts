@@ -1,17 +1,15 @@
 import { expect } from "chai";
-import { existsSync, readFileSync, rmSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { extractTarGzip, extractZip } from "../../src/electron/archive";
 import {
   getTestInputAssetDirectory,
   getTestOutputDirectory,
 } from "./utils/file";
 import path from "path";
+import { rmNonEmptyDir } from "../../src/electron/FileSystem";
 
 after(() => {
-  rmSync(path.resolve(getTestInputAssetDirectory(), `archive`), {
-    force: true,
-    recursive: true,
-  });
+  rmNonEmptyDir(path.join(getTestInputAssetDirectory(), `archive`));
 });
 describe(`.tar.gz extension test`, () => {
   it(`should throws with non-exist file`, (done) => {
@@ -24,8 +22,8 @@ describe(`.tar.gz extension test`, () => {
 
   it(`should extract a tar gz contains folder inside`, (done) => {
     extractTarGzip(
-      path.resolve(getTestInputAssetDirectory(), `archive.tar.gz`),
-      path.resolve(getTestInputAssetDirectory())
+      path.join(getTestInputAssetDirectory(), `archive.tar.gz`),
+      path.join(getTestInputAssetDirectory())
     )
       .then(() => {
         expect(
@@ -44,10 +42,7 @@ describe(`.tar.gz extension test`, () => {
         ).to.be.eq("1");
       })
       .then(() => {
-        rmSync(path.resolve(getTestInputAssetDirectory(), `archive`), {
-          force: true,
-          recursive: true,
-        });
+        rmNonEmptyDir(path.join(getTestInputAssetDirectory(), `archive`));
         done();
       })
       .catch(done);
@@ -57,8 +52,8 @@ describe(`.tar.gz extension test`, () => {
 describe(`zip extract test`, () => {
   it(`should extract zip files / directories`, (done) => {
     extractZip(
-      path.resolve(getTestInputAssetDirectory(), `archive.zip`),
-      path.resolve(getTestInputAssetDirectory())
+      path.join(getTestInputAssetDirectory(), `archive.zip`),
+      path.join(getTestInputAssetDirectory())
     )
       .then(() => {
         expect(

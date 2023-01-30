@@ -14,11 +14,9 @@ import needle from "needle";
 import { MinecraftManifestStorage } from "../../src/electron/mojang/MinecraftVersionManifest";
 import { resetFakePlatform, setFakePlatform } from "./utils/fake-os";
 import { resetFakeArch, setFakeArch } from "../../src/electron/utils/Arch";
-import { existsSync, rm, rmSync } from "fs";
-import {
-  getAssetsDirPath,
-  getVersionsDirectory,
-} from "../../src/electron/AssetResolver";
+import { existsSync } from "fs";
+import { getVersionsDirectory } from "../../src/electron/AssetResolver";
+import { rmNonEmptyDir } from "../../src/electron/FileSystem";
 
 describe("GameVersion", () => {
   let gameVersionResponse: GameVersionResponse;
@@ -288,7 +286,7 @@ describe("Library filter", () => {
 
 describe("GameVersionStorage", () => {
   before(() => {
-    rmSync(getVersionsDirectory(), { force: true, recursive: true });
+    rmNonEmptyDir(getVersionsDirectory());
   });
 
   it("should get from nothing (force download)", (done) => {

@@ -1,4 +1,4 @@
-import { existsSync, rmSync } from "fs";
+import { existsSync } from "fs";
 import path from "path";
 import { Download } from "./../../src/electron/download/download";
 import { expect } from "chai";
@@ -7,6 +7,7 @@ import {
   getGameAssetUrlFromHash,
 } from "../../src/electron/mojang/GameAssetIndex";
 import { getTestOutputDirectory } from "./utils/file";
+import { rmNonEmptyDir } from "../../src/electron/FileSystem";
 
 describe(`getGameAssetUrlFromHash`, () => {
   it(`should return a url with first 2 characters of the hash, and the true hash`, () => {
@@ -50,10 +51,9 @@ describe(`getGameAssetUrlFromHash`, () => {
       })
       .then(() => {
         // Clean up
-        rmSync(path.dirname(getGameAssetChildDirectoryFromHash(hashOfItem)), {
-          recursive: true,
-          force: true,
-        });
+        rmNonEmptyDir(
+          path.dirname(getGameAssetChildDirectoryFromHash(hashOfItem))
+        );
       })
       .then(done)
       .catch(done);

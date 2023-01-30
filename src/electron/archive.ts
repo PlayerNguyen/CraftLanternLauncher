@@ -1,9 +1,8 @@
 import { PathLike } from "fs";
-import { spawn } from "child_process";
 import { createReadStream, createWriteStream, existsSync, mkdirSync } from "fs";
-import { isWindows } from "./utils/Platform";
 import unzip from "unzipper";
-import stream from "stream";
+import tar from "tar";
+import fs from "fs";
 
 /**
  * Extract a file .tar.gz extension. Useful for adoptium binary in Linux / MacOS system.
@@ -13,13 +12,6 @@ import stream from "stream";
  */
 export function extractTarGzip(filePath: PathLike, parentOutput: PathLike) {
   return new Promise<void>((res, rej) => {
-    if (isWindows()) {
-      return rej(
-        new Error(
-          `Unsupported operating system. tar.gz file only support for linux / macos`
-        )
-      );
-    }
     // If the archive file is not exist
     if (!existsSync(filePath)) {
       return rej(new Error(`File is not existed ${filePath}`));
@@ -30,25 +22,16 @@ export function extractTarGzip(filePath: PathLike, parentOutput: PathLike) {
       return rej(new Error(`Directory is not existed ${parentOutput}`));
     }
 
-    let spawner = spawn("tar", [
-      "-zxf",
-      filePath.toString(),
-      "-C",
-      parentOutput.toString(),
-    ]);
-
-    spawner.on("exit", (code, _signal) => {
-      if (code === 0) {
+    const renderStream = fs.createReadStream(filePath).pipe(
+      tar.x({
+        C: parentOutput.toString(),
+      })
+    );
+    renderStream
+      .on(`end`, () => {
         res();
-      } else {
-        rej(
-          new Error(`Unknown error, the system are exited with code ${code}`)
-        );
-      }
-    });
-    spawner.on("error", (err) => {
-      rej(err);
-    });
+      })
+      .on("error", (error) => rej(error));
   });
 }
 

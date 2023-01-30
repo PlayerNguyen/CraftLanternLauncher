@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import http from "http";
 import crypto from "crypto";
 import { EventEmitter } from "events";
@@ -12,7 +11,7 @@ import {
   createSha1HashStream,
   createSha256Stream,
 } from "../security/Security";
-import needle from "needle";
+import { rmNonEmptyDir } from "../FileSystem";
 
 export interface DownloadItem {
   path: PathLike | string;
@@ -244,7 +243,7 @@ export class Download extends EventEmitter {
             );
 
             // Remove the corrupted file
-            fs.rmSync(willDownloadItem.path, { force: true });
+            rmNonEmptyDir(willDownloadItem.path.toString());
             console.error(
               new Error(`File has been corrupted ${willDownloadItem.path}`)
             );

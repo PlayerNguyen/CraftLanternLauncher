@@ -5,17 +5,24 @@ import { getApplicationShortName } from "./Application";
 
 function getAppPath() {
   return process.env.NODE_ENV === "testing"
-    ? `./test-output`
+    ? `test-output`
     : path.join(app.getAppPath());
 }
 
 function getApplicationDataPath() {
-  return path.resolve(
-    process.env.NODE_ENV === "testing"
-      ? `./test-app-data-output`
-      : app.getPath("appData"),
+  return path.join(
+    process.env.APPDATA ||
+      (process.platform == "darwin"
+        ? process.env.HOME + "/Library/Preferences"
+        : process.env.HOME + "/.local/share"),
     getApplicationShortName()
   );
+  // return path.resolve(
+  //   process.env.NODE_ENV === "testing"
+  //     ? path.join(`test-output`, `appData`)
+  //     : app.getPath("appData"),
+  //   getApplicationShortName()
+  // );
 }
 
 function setupDirectory() {

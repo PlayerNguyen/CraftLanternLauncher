@@ -5,7 +5,7 @@ import needle from "needle";
 import { MinecraftManifestStorage } from "./../mojang/MinecraftVersionManifest";
 
 import { IpcMainInvokeEvent } from "electron";
-import { cpSync, existsSync, mkdirSync, rmSync } from "original-fs";
+import { cpSync, existsSync, mkdirSync } from "fs";
 import {
   getAssetsDirPath,
   getGameLibraryDirectory,
@@ -24,6 +24,7 @@ import {
   getGameAssetChildDirectoryFromHash,
   getGameAssetUrlFromHash,
 } from "../mojang/GameAssetIndex";
+import { rmNonEmptyDir } from "../FileSystem";
 
 export class SendAssetDownloadListener implements IpcMainInvokeListener {
   name = "asset:download";
@@ -110,10 +111,8 @@ export class SendAssetDownloadListener implements IpcMainInvokeListener {
 
           // Then remove tmp directory
           console.log(`Cleaning 'tmp' directory`);
-          if (existsSync(tempDirectory))
-            rmSync(tempDirectory, { force: true, recursive: true });
-          if (existsSync(downloadDirectory))
-            rmSync(downloadDirectory, { force: true, recursive: true });
+          if (existsSync(tempDirectory)) rmNonEmptyDir(tempDirectory);
+          if (existsSync(downloadDirectory)) rmNonEmptyDir(downloadDirectory);
           return dataDirectory;
         })
         .then((dataDirectory: string) => {
